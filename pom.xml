@@ -23,7 +23,7 @@
 
         <!-- Dependency Versions -->
         <spring.boot.version>3.1.0</spring.boot.version>
-        <telegrambots.version>6.5.0</telegrambots.version>
+        <telegrambots.version>6.7.0</telegrambots.version> <!-- Обновлено до 6.7.0 -->
         <lombok.version>1.18.26</lombok.version>
         <hibernate.version>6.2.6.Final</hibernate.version>
         <postgresql.version>42.5.5</postgresql.version> <!-- Обновлено до 42.5.5 -->
@@ -39,70 +39,70 @@
             <artifactId>spring-boot-starter</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
-        
+
         <!-- PostgreSQL Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
         </dependency>
-        
+
         <!-- Hibernate ORM -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
-        
+
         <!-- Telegram Bots Spring Boot Starter -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-spring-boot-starter</artifactId>
             <version>${telegrambots.version}</version>
         </dependency>
-        
-        <!-- Lombok for reducing boilerplate code -->
+
+        <!-- Lombok для уменьшения boilerplate-кода -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
-        
-        <!-- dotenv-java for environment variable management -->
+
+        <!-- dotenv-java для управления переменными окружения -->
         <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>dotenv-java</artifactId>
             <version>${dotenv.version}</version>
         </dependency>
-        
+
         <!-- JSON Processing -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${json.version}</version>
         </dependency>
-        
-        <!-- Testing Dependencies -->
+
+        <!-- Зависимости для тестирования -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${spring.boot.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -126,8 +126,8 @@
                     </execution>
                 </executions>
             </plugin>
-            
-            <!-- Maven Compiler Plugin with Annotation Processing for Lombok -->
+
+            <!-- Maven Compiler Plugin с настройкой аннотационной обработки для Lombok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -145,8 +145,8 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-            
-            <!-- Maven Resources Plugin to Specify Encoding -->
+
+            <!-- Maven Resources Plugin для явного указания кодировки -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -164,8 +164,8 @@
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
-        
-        <!-- JitPack Repository (if needed for any dependencies) -->
+
+        <!-- JitPack Repository (если необходимо для каких-либо зависимостей) -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
@@ -174,7 +174,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot Dependency Management -->
+            <!-- Управление зависимостями Spring Boot -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
