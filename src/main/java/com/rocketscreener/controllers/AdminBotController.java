@@ -19,12 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-/*
-  Admin bot allows full configuration.
-  Repository: https://github.com/Vladymirovich/RocketScreener
-  Use inline menus to manage filters, sources, templates.
-*/
-
 @Component
 public class AdminBotController extends TelegramLongPollingBot {
 
@@ -85,8 +79,38 @@ public class AdminBotController extends TelegramLongPollingBot {
         if(text.equals("/start")){
             sendText(chatId, "Welcome to Admin Bot menu. Use the inline menu.");
             showMainMenu(chatId);
+        } else if(text.startsWith("/add_filter")){
+            // Format: /add_filter name metric threshold threshold_type interval
+            // Example: /add_filter VolumeChange volume 10 percentage 5
+            String[] parts = text.split(" ");
+            if(parts.length == 6){
+                String name = parts[1];
+                String metric = parts[2];
+                double threshold = Double.parseDouble(parts[3]);
+                String thresholdType = parts[4];
+                int interval = Integer.parseInt(parts[5]);
+                filterRepo.addFilter(name, metric, threshold, thresholdType, interval, false, null);
+                sendText(chatId, "Filter added successfully!");
+            } else {
+                sendText(chatId, "Usage: /add_filter name metric threshold threshold_type interval");
+            }
+        } else if(text.startsWith("/add_source")){
+            // Format: /add_source name type base_url api_key priority
+            // Example: /add_source CMC analytics https://pro-api.coinmarketcap.com YOUR_CMC_KEY 100
+            String[] parts = text.split(" ");
+            if(parts.length == 6){
+                String name = parts[1];
+                String type = parts[2];
+                String baseUrl = parts[3];
+                String apiKey = parts[4];
+                int priority = Integer.parseInt(parts[5]);
+                sourceRepo.addSource(name, type, baseUrl, apiKey, priority);
+                sendText(chatId, "Source added successfully!");
+            } else {
+                sendText(chatId, "Usage: /add_source name type base_url api_key priority");
+            }
         } else {
-            sendText(chatId, "Use the inline menus for configuration. Type /start to refresh.");
+            sendText(chatId, "Use the inline menus or /start to see options.");
         }
     }
 
@@ -121,17 +145,11 @@ public class AdminBotController extends TelegramLongPollingBot {
     }
 
     private void promptAddFilter(String chatId) {
-        sendText(chatId, "Please add filter using format:\n" +
-                "`/add_filter name metric threshold threshold_type interval`\n" +
-                "For example:\n" +
-                "`/add_filter VolumeChange volume 10 percentage 5`");
+        sendText(chatId, "Please add filter:\n`/add_filter name metric threshold threshold_type interval`");
     }
 
     private void promptAddSource(String chatId){
-        sendText(chatId, "Please add source using format:\n" +
-                "`/add_source name type base_url api_key priority`\n" +
-                "For example:\n" +
-                "`/add_source CMC analytics https://pro-api.coinmarketcap.com YOUR_CMC_KEY 100`");
+        sendText(chatId, "Please add source:\n`/add_source name type base_url api_key priority`");
     }
 
     private void showMainMenu(String chatId) {
@@ -164,7 +182,6 @@ public class AdminBotController extends TelegramLongPollingBot {
             int filterId = Integer.parseInt(parts[1]);
             FilterRecord f = filterRepo.findAllEnabled().stream().filter(x->x.id()==filterId).findFirst().orElse(null);
             if(f!=null){
-                // Show details
                 sendText(chatId, "Filter details:\nName: "+f.name()+"\nMetric: "+f.metric()+"\nThreshold: "+f.thresholdValue()+"\nInterval:"+f.timeIntervalMinutes()+"min");
                 answerCallbackQuery(callbackId,"Filter details shown");
             } else {
