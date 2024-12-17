@@ -1,5 +1,6 @@
 package com.rocketscreener.storage;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -8,12 +9,14 @@ import java.util.List;
 public class SourceRepository {
     private final JdbcTemplate jdbc;
 
+    @Autowired
     public SourceRepository(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
 
     public List<SourceRecord> findAllEnabledSources(){
-        return jdbc.query("SELECT id, name, type, base_url, api_key, enabled, priority FROM sources WHERE enabled = TRUE",
+        return jdbc.query(
+                "SELECT id, name, type, base_url, api_key, enabled, priority FROM sources WHERE enabled = TRUE",
                 (rs, rowNum) -> new SourceRecord(
                         rs.getInt("id"),
                         rs.getString("name"),
@@ -26,13 +29,16 @@ public class SourceRepository {
     }
 
     public void addSource(String name, String type, String baseUrl, String apiKey, int priority){
-        jdbc.update("INSERT INTO sources(name,type,base_url,api_key,priority) VALUES (?,?,?,?,?)",
+        jdbc.update(
+                "INSERT INTO sources(name, type, base_url, api_key, priority) VALUES (?, ?, ?, ?, ?)",
                 name, type, baseUrl, apiKey, priority);
     }
 
     public void setSourceEnabled(int id, boolean enabled){
-        jdbc.update("UPDATE sources SET enabled=? WHERE id=?", enabled, id);
+        jdbc.update(
+                "UPDATE sources SET enabled = ? WHERE id = ?",
+                enabled, id);
     }
 
-    // Other CRUD operations as needed
+    // Другие CRUD операции по необходимости
 }
