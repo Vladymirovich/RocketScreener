@@ -89,17 +89,19 @@ public class AdminBotController extends TelegramLongPollingBot {
             sendText(chatId, "Welcome to Admin Bot menu. Use the inline menu.");
             showMainMenu(chatId);
         } else if(text.startsWith("/add_filter")){
-            // Format: /add_filter name metric threshold threshold_type interval
-            // Example: /add_filter VolumeChange volume 10 percentage 5
+            // Format: /add_filter name metric threshold threshold_type interval isComposite compositeExpression
+            // Example: /add_filter VolumeChange volume 10 percentage 5 false ""
             String[] parts = text.split(" ");
-            if(parts.length == 6){
+            if(parts.length == 9){
                 try{
                     String name = parts[1];
                     String metric = parts[2];
-                    double threshold = Double.parseDouble(parts[3]);
+                    BigDecimal thresholdValue = new BigDecimal(parts[3]);
                     String thresholdType = parts[4];
-                    int interval = Integer.parseInt(parts[5]);
-                    filterRepo.addFilter(name, metric, threshold, thresholdType, interval, false, null);
+                    int timeIntervalMinutes = Integer.parseInt(parts[5]);
+                    boolean isComposite = Boolean.parseBoolean(parts[6]);
+                    String compositeExpression = parts[7].equals("\"\"") ? "" : parts[7];
+                    filterRepo.addFilter(name, metric, thresholdValue, thresholdType, timeIntervalMinutes, true, isComposite, compositeExpression);
                     sendText(chatId, "Filter added successfully!");
                 } catch(NumberFormatException e){
                     sendText(chatId, "Invalid number format. Please check your command.");
@@ -109,7 +111,7 @@ public class AdminBotController extends TelegramLongPollingBot {
                     log.error("Error adding filter", e);
                 }
             } else {
-                sendText(chatId, "Usage: /add_filter name metric threshold threshold_type interval");
+                sendText(chatId, "Usage: /add_filter name metric threshold threshold_type timeIntervalMinutes isComposite compositeExpression");
             }
         } else if(text.startsWith("/add_source")){
             // Format: /add_source name type base_url api_key priority
@@ -170,7 +172,7 @@ public class AdminBotController extends TelegramLongPollingBot {
     }
 
     private void promptAddFilter(String chatId) {
-        sendText(chatId, "Please add filter:\n`/add_filter name metric threshold threshold_type interval`");
+        sendText(chatId, "Please add filter:\n`/add_filter name metric threshold threshold_type timeIntervalMinutes isComposite compositeExpression`");
     }
 
     private void promptAddSource(String chatId){
@@ -224,7 +226,16 @@ public class AdminBotController extends TelegramLongPollingBot {
                 int filterId = Integer.parseInt(parts[1]);
                 FilterRecord f = filterRepo.findAllEnabled().stream().filter(x->x.id()==filterId).findFirst().orElse(null);
                 if(f!=null){
-                    sendText(chatId, "Filter details:\nName: "+f.name()+"\nMetric: "+f.metric()+"\nThreshold: "+f.thresholdValue()+"\nInterval: "+f.timeIntervalMinutes()+" min");
+                    StringBuilder details = new StringBuilder();
+                    details.append("Filter details:\n")
+                           .append("Name: ").append(f.name()).append("\n")
+                           .append("Metric: ").append(f.metric()).append("\n")
+                           .append("Threshold: ").append(f.thresholdValue()).append("\n")
+                           .append("Threshold Type: ").append(f.thresholdType()).append("\n")
+                           .append("Interval: ").append(f.timeIntervalMinutes()).append(" min").append("\n")
+                           .append("Is Composite: ").append(f.isComposite()).append("\n")
+                           .append("Composite Expression: ").append(f.compositeExpression());
+                    sendText(chatId, details.toString());
                     answerCallbackQuery(callbackId,"Filter details shown");
                 } else {
                     answerCallbackQuery(callbackId,"Filter not found");
@@ -268,7 +279,13 @@ public class AdminBotController extends TelegramLongPollingBot {
                 int sourceId = Integer.parseInt(parts[1]);
                 SourceRecord s = sourceRepo.findAllEnabledSources().stream().filter(x->x.id()==sourceId).findFirst().orElse(null);
                 if(s!=null){
-                    sendText(chatId, "Source details:\nName: "+s.name()+"\nType: "+s.type()+"\nBase URL: "+s.baseUrl()+"\nPriority: "+s.priority());
+                    StringBuilder details = new StringBuilder();
+                    details.append("Source details:\n")
+                           .append("Name: ").append(s.name()).append("\n")
+                           .append("Type: ").append(s.type()).append("\n")
+                           .append("Base URL: ").append(s.baseUrl()).append("\n")
+                           .append("Priority: ").append(s.priority());
+                    sendText(chatId, details.toString());
                     answerCallbackQuery(callbackId,"Source details shown");
                 } else {
                     answerCallbackQuery(callbackId,"Source not found");
