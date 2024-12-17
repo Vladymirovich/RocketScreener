@@ -60,13 +60,13 @@
         <!-- Telegram Bots Library -->
         <dependency>
             <groupId>org.telegram</groupId>
-            <artifactId>telegrambots-extensions</artifactId>
+            <artifactId>telegrambots</artifactId>
             <version>${telegrambots.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
+            <artifactId>telegrambots-extensions</artifactId>
             <version>${telegrambots.version}</version>
         </dependency>
         
