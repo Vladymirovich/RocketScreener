@@ -5,15 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /*
-  Project repository: https://github.com/Vladymirovich/RocketScreener
-  Deployment & run instructions:
-    1) Clone repository
-    2) docker-compose up -d (in docker/ folder)
-    3) mvn clean install
-    4) mvn spring-boot:run
+  ChatGPT commentary (10-13 words):
+  "This code enhances reliability, scalability, overall performance, and user convenience."
 */
-
-/* ChatGPT commentary: This improves reliability and enhances user experience. */
 
 @SpringBootApplication
 public class Main {
