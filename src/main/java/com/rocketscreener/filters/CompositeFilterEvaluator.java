@@ -1,6 +1,7 @@
 package com.rocketscreener.filters;
 
 import com.rocketscreener.storage.FilterRecord;
+import com.rocketscreener.storage.FilterRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,10 +130,18 @@ public class CompositeFilterEvaluator {
 
         for (String token : postfix) {
             if (token.equals("AND")) {
+                if (stack.size() < 2) {
+                    log.error("Invalid postfix expression: insufficient operands for AND");
+                    return false;
+                }
                 boolean b = stack.pop();
                 boolean a = stack.pop();
                 stack.push(a && b);
             } else if (token.equals("OR")) {
+                if (stack.size() < 2) {
+                    log.error("Invalid postfix expression: insufficient operands for OR");
+                    return false;
+                }
                 boolean b = stack.pop();
                 boolean a = stack.pop();
                 stack.push(a || b);
@@ -143,7 +152,12 @@ public class CompositeFilterEvaluator {
             }
         }
 
-        return stack.isEmpty() ? false : stack.pop();
+        if (stack.size() != 1) {
+            log.error("Invalid postfix expression: stack size != 1 after evaluation");
+            return false;
+        }
+
+        return stack.pop();
     }
 
     /**
@@ -156,20 +170,18 @@ public class CompositeFilterEvaluator {
      * @return true if the filter is satisfied, else false.
      */
     private boolean checkFilterByName(String name, String symbol, String metric, double currentValue) {
-        List<FilterRecord> allFilters = filterRepository.findAllEnabled();
-        for (FilterRecord filter : allFilters) {
-            if (filter.name().equalsIgnoreCase(name)) {
-                if (filter.isComposite()) {
-                    String compositeExpr = filter.compositeExpression();
-                    if (compositeExpr != null && !compositeExpr.isBlank()) {
-                        return evaluate(compositeExpr, symbol, metric, currentValue);
-                    } else {
-                        log.warn("Composite filter '{}' has no expression.", name);
-                        return false;
-                    }
+        FilterRecord filter = filterRepository.findByName(name);
+        if (filter != null) {
+            if (filter.isComposite()) {
+                String compositeExpr = filter.compositeExpression();
+                if (compositeExpr != null && !compositeExpr.isBlank()) {
+                    return evaluate(compositeExpr, symbol, metric, currentValue);
                 } else {
-                    return filterService.checkSingleFilter(filter, symbol, metric, currentValue);
+                    log.warn("Composite filter '{}' has no expression.", name);
+                    return false;
                 }
+            } else {
+                return filterService.checkSingleFilter(filter, symbol, metric, currentValue);
             }
         }
         log.warn("Filter '{}' not found or not enabled.", name);
