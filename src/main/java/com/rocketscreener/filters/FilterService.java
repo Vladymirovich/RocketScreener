@@ -9,11 +9,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
-/*
-  FilterService evaluates filters (percentage, absolute) and composites.
-  No placeholders, real logic.
-*/
-
 @Service
 public class FilterService {
     private final FilterRepository filterRepo;
@@ -62,7 +57,6 @@ public class FilterService {
         } else if(f.thresholdType().equalsIgnoreCase("absolute")) {
             return Math.abs(change) >= threshold;
         }
-        // Add more threshold types if needed
         return false;
     }
 }
