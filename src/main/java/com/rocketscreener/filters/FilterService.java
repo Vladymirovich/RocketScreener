@@ -1,62 +1,90 @@
 package com.rocketscreener.filters;
 
-import com.rocketscreener.storage.FilterRepository;
 import com.rocketscreener.storage.FilterRecord;
-import com.rocketscreener.storage.HistoricalDataRepository;
+import com.rocketscreener.storage.FilterRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class FilterService {
-    private final FilterRepository filterRepo;
-    private final HistoricalDataRepository histDataRepo;
 
-    public FilterService(FilterRepository filterRepo, HistoricalDataRepository histDataRepo) {
-        this.filterRepo = filterRepo;
-        this.histDataRepo = histDataRepo;
+    private final FilterRepository filterRepository;
+
+    @Autowired
+    public FilterService(FilterRepository filterRepository) {
+        this.filterRepository = filterRepository;
     }
 
-    public boolean checkFilters(String symbol, String metric, double currentValue) {
-        List<FilterRecord> filters = filterRepo.findAllEnabled();
-        boolean triggerEvent = false;
-
-        for(FilterRecord f : filters){
-            if(!f.isComposite()){
-                if(checkSingleFilter(f, symbol, metric, currentValue)) {
-                    triggerEvent = true;
-                }
-            } else {
-                if(f.compositeExpression()!=null && !f.compositeExpression().isBlank()){
-                    CompositeFilterEvaluator evaluator = com.rocketscreener.utils.SpringContext.getBean(CompositeFilterEvaluator.class);
-                    if(evaluator.evaluate(f.compositeExpression(), symbol, metric, currentValue)){
-                        triggerEvent = true;
-                    }
-                }
-            }
+    /**
+     * Проверяет, соответствует ли текущий показатель фильтру.
+     *
+     * @param filter        Фильтр для проверки.
+     * @param symbol        Символ (например, тикер криптовалюты).
+     * @param metric        Метрика, которую необходимо проверить.
+     * @param currentValue  Текущее значение метрики.
+     * @return true, если текущий показатель соответствует фильтру, иначе false.
+     */
+    public boolean checkSingleFilter(FilterRecord filter, String symbol, String metric, double currentValue) {
+        if (!filter.metric().equalsIgnoreCase(metric)) {
+            // Метрика не совпадает
+            return false;
         }
 
-        return triggerEvent;
+        BigDecimal threshold = filter.thresholdValue();
+        String thresholdType = filter.thresholdType().toLowerCase();
+
+        switch (thresholdType) {
+            case "greater_than":
+                return BigDecimal.valueOf(currentValue).compareTo(threshold) > 0;
+            case "greater_than_or_equal":
+                return BigDecimal.valueOf(currentValue).compareTo(threshold) >= 0;
+            case "less_than":
+                return BigDecimal.valueOf(currentValue).compareTo(threshold) < 0;
+            case "less_than_or_equal":
+                return BigDecimal.valueOf(currentValue).compareTo(threshold) <= 0;
+            case "equal":
+                return BigDecimal.valueOf(currentValue).compareTo(threshold) == 0;
+            case "not_equal":
+                return BigDecimal.valueOf(currentValue).compareTo(threshold) != 0;
+            default:
+                // Неизвестный тип порога
+                return false;
+        }
     }
 
-    public boolean checkSingleFilter(FilterRecord f, String symbol, String metric, double currentValue) {
-        if(!f.metric().equals(metric)) return false;
+    /**
+     * Дополнительные методы сервиса по необходимости.
+     */
 
-        double threshold = f.thresholdValue().doubleValue();
-        Timestamp now = Timestamp.from(Instant.now());
-        Timestamp from = Timestamp.from(Instant.now().minusSeconds(f.timeIntervalMinutes()*60L));
-        var hist = histDataRepo.getDataForInterval(symbol, metric, from, now);
-        double oldValue = hist.isEmpty()? currentValue : hist.get(0).value().doubleValue();
-        double change = currentValue - oldValue;
-        double percentChange = (oldValue==0)? 0 : (change / oldValue)*100.0;
+    /**
+     * Метод для примера: получение всех фильтров.
+     *
+     * @return Список всех включённых фильтров.
+     */
+    public List<FilterRecord> getAllEnabledFilters() {
+        return filterRepository.findAllEnabled();
+    }
 
-        if(f.thresholdType().equalsIgnoreCase("percentage")) {
-            return Math.abs(percentChange) >= threshold;
-        } else if(f.thresholdType().equalsIgnoreCase("absolute")) {
-            return Math.abs(change) >= threshold;
-        }
-        return false;
+    /**
+     * Метод для обновления фильтра.
+     *
+     * @param filterId Идентификатор фильтра.
+     * @param enabled  Статус включения фильтра.
+     */
+    public void updateFilterStatus(int filterId, boolean enabled) {
+        filterRepository.setFilterEnabled(filterId, enabled);
+    }
+
+    /**
+     * Метод для удаления фильтра.
+     *
+     * @param filterId Идентификатор фильтра.
+     */
+    public void deleteFilter(int filterId) {
+        // Реализуйте логику удаления фильтра, если необходимо.
+        // Например, можно добавить метод в FilterRepository для удаления.
     }
 }
