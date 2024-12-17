@@ -180,8 +180,16 @@ public class AdminBotController extends TelegramLongPollingBot {
     private void showMainMenu(String chatId) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        rows.add(Collections.singletonList(InlineKeyboardButton.builder().text("Manage Filters").callbackData("manage_filters").build()));
-        rows.add(Collections.singletonList(InlineKeyboardButton.builder().text("Manage Sources").callbackData("manage_sources").build()));
+        rows.add(Collections.singletonList(
+                InlineKeyboardButton.builder()
+                        .text("Manage Filters")
+                        .callbackData("manage_filters")
+                        .build()));
+        rows.add(Collections.singletonList(
+                InlineKeyboardButton.builder()
+                        .text("Manage Sources")
+                        .callbackData("manage_sources")
+                        .build()));
         markup.setKeyboard(rows);
 
         sendInlineKeyboard(chatId, "Admin Menu:", markup);
@@ -192,9 +200,17 @@ public class AdminBotController extends TelegramLongPollingBot {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         for(FilterRecord f : filters){
-            rows.add(Collections.singletonList(InlineKeyboardButton.builder().text(f.name()).callbackData("edit_filter:"+f.id()).build()));
+            rows.add(Collections.singletonList(
+                    InlineKeyboardButton.builder()
+                            .text(f.name())
+                            .callbackData("edit_filter:"+f.id())
+                            .build()));
         }
-        rows.add(Collections.singletonList(InlineKeyboardButton.builder().text("Add Filter").callbackData("add_filter").build()));
+        rows.add(Collections.singletonList(
+                InlineKeyboardButton.builder()
+                        .text("Add Filter")
+                        .callbackData("add_filter")
+                        .build()));
         markup.setKeyboard(rows);
 
         sendInlineKeyboard(chatId, "Filters:", markup);
@@ -228,9 +244,17 @@ public class AdminBotController extends TelegramLongPollingBot {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         for(SourceRecord s : sources){
-            rows.add(Collections.singletonList(InlineKeyboardButton.builder().text(s.name()).callbackData("edit_source:"+s.id()).build()));
+            rows.add(Collections.singletonList(
+                    InlineKeyboardButton.builder()
+                            .text(s.name())
+                            .callbackData("edit_source:"+s.id())
+                            .build()));
         }
-        rows.add(Collections.singletonList(InlineKeyboardButton.builder().text("Add Source").callbackData("add_source").build()));
+        rows.add(Collections.singletonList(
+                InlineKeyboardButton.builder()
+                        .text("Add Source")
+                        .callbackData("add_source")
+                        .build()));
         markup.setKeyboard(rows);
 
         sendInlineKeyboard(chatId, "Sources:", markup);
