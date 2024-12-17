@@ -19,8 +19,13 @@ import com.rocketscreener.storage.SourceRepository;
 import com.rocketscreener.storage.SourceRecord;
 import com.rocketscreener.templates.TemplateService;
 
+import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * AdminBotController:
+ * Handles administrative commands and interactions for the RocketScreener Telegram bot.
+ */
 @Component
 public class AdminBotController extends TelegramLongPollingBot {
 
@@ -60,40 +65,51 @@ public class AdminBotController extends TelegramLongPollingBot {
         return this.botUsername;
     }
 
+    /**
+     * Checks if the user is an admin based on the whitelist.
+     *
+     * @param userId The Telegram user ID.
+     * @return true if the user is an admin, else false.
+     */
     private boolean isAdmin(String userId) {
         return adminWhitelist.contains(userId);
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        if(update.hasMessage() && update.getMessage().hasText()){
+        if (update.hasMessage() && update.getMessage().hasText()) {
             handleTextMessage(update);
-        } else if(update.hasCallbackQuery()){
+        } else if (update.hasCallbackQuery()) {
             handleCallbackQuery(update.getCallbackQuery());
         }
     }
 
-    private void handleTextMessage(Update update){
+    /**
+     * Handles incoming text messages.
+     *
+     * @param update The update containing the message.
+     */
+    private void handleTextMessage(Update update) {
         String text = update.getMessage().getText();
         String chatId = update.getMessage().getChatId().toString();
         String userId = update.getMessage().getFrom().getId().toString();
 
         log.info("AdminBot received text message: {} from user: {}", text, userId);
 
-        if(!isAdmin(userId)){
+        if (!isAdmin(userId)) {
             sendText(chatId, "Access Denied: You are not in the admin whitelist.");
             return;
         }
 
-        if(text.equals("/start")){
+        if (text.equals("/start")) {
             sendText(chatId, "Welcome to Admin Bot menu. Use the inline menu.");
             showMainMenu(chatId);
-        } else if(text.startsWith("/add_filter")){
-            // Format: /add_filter name metric threshold threshold_type interval isComposite compositeExpression
-            // Example: /add_filter VolumeChange volume 10 percentage 5 false ""
-            String[] parts = text.split(" ");
-            if(parts.length == 9){
-                try{
+        } else if (text.startsWith("/add_filter")) {
+            // Format: /add_filter name metric threshold threshold_type timeIntervalMinutes isComposite compositeExpression
+            // Example: /add_filter VolumeChange volume 10 greater_than 5 false ""
+            String[] parts = text.split(" ", 9);
+            if (parts.length == 9) {
+                try {
                     String name = parts[1];
                     String metric = parts[2];
                     BigDecimal thresholdValue = new BigDecimal(parts[3]);
@@ -101,24 +117,28 @@ public class AdminBotController extends TelegramLongPollingBot {
                     int timeIntervalMinutes = Integer.parseInt(parts[5]);
                     boolean isComposite = Boolean.parseBoolean(parts[6]);
                     String compositeExpression = parts[7].equals("\"\"") ? "" : parts[7];
-                    filterRepo.addFilter(name, metric, thresholdValue, thresholdType, timeIntervalMinutes, true, isComposite, compositeExpression);
+                    // If compositeExpression contains spaces, parts[8] should be appended
+                    if (!parts[8].equals("\"\"") && !parts[8].isBlank()) {
+                        compositeExpression += " " + parts[8];
+                    }
+                    filterRepo.addFilter(name, metric, thresholdValue, thresholdType, timeIntervalMinutes, isComposite, compositeExpression);
                     sendText(chatId, "Filter added successfully!");
-                } catch(NumberFormatException e){
+                } catch (NumberFormatException e) {
                     sendText(chatId, "Invalid number format. Please check your command.");
                     log.error("Error parsing numbers in /add_filter command", e);
-                } catch(Exception e){
+                } catch (Exception e) {
                     sendText(chatId, "Failed to add filter. Please try again.");
                     log.error("Error adding filter", e);
                 }
             } else {
                 sendText(chatId, "Usage: /add_filter name metric threshold threshold_type timeIntervalMinutes isComposite compositeExpression");
             }
-        } else if(text.startsWith("/add_source")){
+        } else if (text.startsWith("/add_source")) {
             // Format: /add_source name type base_url api_key priority
             // Example: /add_source CMC analytics https://pro-api.coinmarketcap.com YOUR_CMC_KEY 100
-            String[] parts = text.split(" ");
-            if(parts.length == 6){
-                try{
+            String[] parts = text.split(" ", 6);
+            if (parts.length == 6) {
+                try {
                     String name = parts[1];
                     String type = parts[2];
                     String baseUrl = parts[3];
@@ -126,10 +146,10 @@ public class AdminBotController extends TelegramLongPollingBot {
                     int priority = Integer.parseInt(parts[5]);
                     sourceRepo.addSource(name, type, baseUrl, apiKey, priority);
                     sendText(chatId, "Source added successfully!");
-                } catch(NumberFormatException e){
+                } catch (NumberFormatException e) {
                     sendText(chatId, "Invalid number format. Please check your command.");
                     log.error("Error parsing numbers in /add_source command", e);
-                } catch(Exception e){
+                } catch (Exception e) {
                     sendText(chatId, "Failed to add source. Please try again.");
                     log.error("Error adding source", e);
                 }
@@ -141,47 +161,68 @@ public class AdminBotController extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Handles incoming callback queries from inline keyboards.
+     *
+     * @param query The callback query.
+     */
     private void handleCallbackQuery(CallbackQuery query) {
         String chatId = query.getMessage().getChatId().toString();
         String userId = query.getFrom().getId().toString();
         log.info("AdminBot received callback: {} from user: {}", query.getData(), userId);
 
-        if(!isAdmin(userId)){
-            answerCallbackQuery(query.getId(),"Access Denied");
+        if (!isAdmin(userId)) {
+            answerCallbackQuery(query.getId(), "Access Denied");
             return;
         }
 
         String data = query.getData();
-        if(data.equals("manage_filters")){
+        if (data.equals("manage_filters")) {
             showFiltersMenu(chatId, query.getId());
-        } else if(data.equals("manage_sources")){
+        } else if (data.equals("manage_sources")) {
             showSourcesMenu(chatId, query.getId());
-        } else if(data.startsWith("edit_filter:")){
+        } else if (data.startsWith("edit_filter:")) {
             handleEditFilter(chatId, query.getId(), data);
-        } else if(data.startsWith("edit_source:")){
+        } else if (data.startsWith("edit_source:")) {
             handleEditSource(chatId, query.getId(), data);
-        } else if(data.equals("add_filter")){
+        } else if (data.equals("add_filter")) {
             promptAddFilter(chatId);
-            answerCallbackQuery(query.getId(),"Enter filter details in chat.");
-        } else if(data.equals("add_source")){
+            answerCallbackQuery(query.getId(), "Enter filter details in chat.");
+        } else if (data.equals("add_source")) {
             promptAddSource(chatId);
-            answerCallbackQuery(query.getId(),"Enter source details in chat.");
+            answerCallbackQuery(query.getId(), "Enter source details in chat.");
         } else {
-            answerCallbackQuery(query.getId(),"Unknown action");
+            answerCallbackQuery(query.getId(), "Unknown action");
         }
     }
 
+    /**
+     * Prompts the admin to add a new filter via command.
+     *
+     * @param chatId The chat ID.
+     */
     private void promptAddFilter(String chatId) {
         sendText(chatId, "Please add filter:\n`/add_filter name metric threshold threshold_type timeIntervalMinutes isComposite compositeExpression`");
     }
 
-    private void promptAddSource(String chatId){
+    /**
+     * Prompts the admin to add a new source via command.
+     *
+     * @param chatId The chat ID.
+     */
+    private void promptAddSource(String chatId) {
         sendText(chatId, "Please add source:\n`/add_source name type base_url api_key priority`");
     }
 
+    /**
+     * Displays the main admin menu with options to manage filters and sources.
+     *
+     * @param chatId The chat ID.
+     */
     private void showMainMenu(String chatId) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
         rows.add(Collections.singletonList(
                 InlineKeyboardButton.builder()
                         .text("Manage Filters")
@@ -197,15 +238,22 @@ public class AdminBotController extends TelegramLongPollingBot {
         sendInlineKeyboard(chatId, "Admin Menu:", markup);
     }
 
+    /**
+     * Displays the filters management menu with options to edit or add filters.
+     *
+     * @param chatId     The chat ID.
+     * @param callbackId The callback query ID.
+     */
     private void showFiltersMenu(String chatId, String callbackId) {
         List<FilterRecord> filters = filterRepo.findAllEnabled();
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        for(FilterRecord f : filters){
+
+        for (FilterRecord f : filters) {
             rows.add(Collections.singletonList(
                     InlineKeyboardButton.builder()
                             .text(f.name())
-                            .callbackData("edit_filter:"+f.id())
+                            .callbackData("edit_filter:" + f.id())
                             .build()));
         }
         rows.add(Collections.singletonList(
@@ -216,16 +264,23 @@ public class AdminBotController extends TelegramLongPollingBot {
         markup.setKeyboard(rows);
 
         sendInlineKeyboard(chatId, "Filters:", markup);
-        answerCallbackQuery(callbackId,"Filters listed");
+        answerCallbackQuery(callbackId, "Filters listed");
     }
 
-    private void handleEditFilter(String chatId, String callbackId, String data){
+    /**
+     * Handles the editing of a specific filter based on its ID.
+     *
+     * @param chatId     The chat ID.
+     * @param callbackId The callback query ID.
+     * @param data       The callback data containing the filter ID.
+     */
+    private void handleEditFilter(String chatId, String callbackId, String data) {
         String[] parts = data.split(":");
-        if(parts.length==2){
-            try{
+        if (parts.length == 2) {
+            try {
                 int filterId = Integer.parseInt(parts[1]);
-                FilterRecord f = filterRepo.findAllEnabled().stream().filter(x->x.id()==filterId).findFirst().orElse(null);
-                if(f!=null){
+                FilterRecord f = filterRepo.findAllEnabled().stream().filter(x -> x.id() == filterId).findFirst().orElse(null);
+                if (f != null) {
                     StringBuilder details = new StringBuilder();
                     details.append("Filter details:\n")
                            .append("Name: ").append(f.name()).append("\n")
@@ -236,29 +291,36 @@ public class AdminBotController extends TelegramLongPollingBot {
                            .append("Is Composite: ").append(f.isComposite()).append("\n")
                            .append("Composite Expression: ").append(f.compositeExpression());
                     sendText(chatId, details.toString());
-                    answerCallbackQuery(callbackId,"Filter details shown");
+                    answerCallbackQuery(callbackId, "Filter details shown");
                 } else {
-                    answerCallbackQuery(callbackId,"Filter not found");
+                    answerCallbackQuery(callbackId, "Filter not found");
                 }
-            } catch(NumberFormatException e){
+            } catch (NumberFormatException e) {
                 sendText(chatId, "Invalid filter ID format.");
                 log.error("Error parsing filter ID", e);
-                answerCallbackQuery(callbackId,"Invalid filter ID format");
+                answerCallbackQuery(callbackId, "Invalid filter ID format");
             }
         } else {
-            answerCallbackQuery(callbackId,"Invalid data format");
+            answerCallbackQuery(callbackId, "Invalid data format");
         }
     }
 
-    private void showSourcesMenu(String chatId, String callbackId){
+    /**
+     * Displays the sources management menu with options to edit or add sources.
+     *
+     * @param chatId     The chat ID.
+     * @param callbackId The callback query ID.
+     */
+    private void showSourcesMenu(String chatId, String callbackId) {
         List<SourceRecord> sources = sourceRepo.findAllEnabledSources();
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        for(SourceRecord s : sources){
+
+        for (SourceRecord s : sources) {
             rows.add(Collections.singletonList(
                     InlineKeyboardButton.builder()
                             .text(s.name())
-                            .callbackData("edit_source:"+s.id())
+                            .callbackData("edit_source:" + s.id())
                             .build()));
         }
         rows.add(Collections.singletonList(
@@ -269,48 +331,69 @@ public class AdminBotController extends TelegramLongPollingBot {
         markup.setKeyboard(rows);
 
         sendInlineKeyboard(chatId, "Sources:", markup);
-        answerCallbackQuery(callbackId,"Sources listed");
+        answerCallbackQuery(callbackId, "Sources listed");
     }
 
-    private void handleEditSource(String chatId, String callbackId, String data){
+    /**
+     * Handles the editing of a specific source based on its ID.
+     *
+     * @param chatId     The chat ID.
+     * @param callbackId The callback query ID.
+     * @param data       The callback data containing the source ID.
+     */
+    private void handleEditSource(String chatId, String callbackId, String data) {
         String[] parts = data.split(":");
-        if(parts.length==2){
-            try{
+        if (parts.length == 2) {
+            try {
                 int sourceId = Integer.parseInt(parts[1]);
-                SourceRecord s = sourceRepo.findAllEnabledSources().stream().filter(x->x.id()==sourceId).findFirst().orElse(null);
-                if(s!=null){
+                SourceRecord s = sourceRepo.findAllEnabledSources().stream().filter(x -> x.id() == sourceId).findFirst().orElse(null);
+                if (s != null) {
                     StringBuilder details = new StringBuilder();
                     details.append("Source details:\n")
                            .append("Name: ").append(s.name()).append("\n")
                            .append("Type: ").append(s.type()).append("\n")
                            .append("Base URL: ").append(s.baseUrl()).append("\n")
+                           .append("API Key: ").append(s.apiKey()).append("\n")
                            .append("Priority: ").append(s.priority());
                     sendText(chatId, details.toString());
-                    answerCallbackQuery(callbackId,"Source details shown");
+                    answerCallbackQuery(callbackId, "Source details shown");
                 } else {
-                    answerCallbackQuery(callbackId,"Source not found");
+                    answerCallbackQuery(callbackId, "Source not found");
                 }
-            } catch(NumberFormatException e){
+            } catch (NumberFormatException e) {
                 sendText(chatId, "Invalid source ID format.");
                 log.error("Error parsing source ID", e);
-                answerCallbackQuery(callbackId,"Invalid source ID format");
+                answerCallbackQuery(callbackId, "Invalid source ID format");
             }
         } else {
-            answerCallbackQuery(callbackId,"Invalid data format");
+            answerCallbackQuery(callbackId, "Invalid data format");
         }
     }
 
+    /**
+     * Sends a plain text message to the specified chat.
+     *
+     * @param chatId The chat ID.
+     * @param text   The text message.
+     */
     private void sendText(String chatId, String text) {
         SendMessage msg = new SendMessage(chatId, text);
         msg.enableMarkdown(true);
-        try{
+        try {
             execute(msg);
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("Error sending message: ", e);
         }
     }
 
-    private void sendInlineKeyboard(String chatId, String text, InlineKeyboardMarkup markup){
+    /**
+     * Sends an inline keyboard message to the specified chat.
+     *
+     * @param chatId The chat ID.
+     * @param text   The text message.
+     * @param markup The inline keyboard markup.
+     */
+    private void sendInlineKeyboard(String chatId, String text, InlineKeyboardMarkup markup) {
         SendMessage msg = new SendMessage(chatId, text);
         msg.setReplyMarkup(markup);
         try {
@@ -320,13 +403,19 @@ public class AdminBotController extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Answers a callback query with the specified text.
+     *
+     * @param callbackId The callback query ID.
+     * @param text       The text to send as a response.
+     */
     private void answerCallbackQuery(String callbackId, String text) {
         AnswerCallbackQuery acq = new AnswerCallbackQuery();
         acq.setCallbackQueryId(callbackId);
         acq.setText(text);
         try {
             execute(acq);
-        } catch(Exception e){
+        } catch (Exception e) {
             log.error("Error answering callback query: ", e);
         }
     }
