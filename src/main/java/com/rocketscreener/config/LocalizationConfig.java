@@ -7,11 +7,13 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 
 @Configuration
 public class LocalizationConfig {
+
     @Bean
     public MessageSource messageSource(){
-        ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
-        ms.setBasename("classpath:localization/messages");
-        ms.setDefaultEncoding("UTF-8");
-        return ms;
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:messages"); // Файл messages.properties должен быть в src/main/resources
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
     }
+
 }
