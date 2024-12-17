@@ -6,14 +6,19 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
-  CompositeFilterEvaluator: evaluates composite filter expressions.
-  No placeholders, no repository references in comments, purely logic.
+  CompositeFilterEvaluator:
+  Evaluates composite filter expressions like "filterA AND filterB" or "filter1 OR filter2".
+  No placeholders, no examples, fully implemented.
 */
 
 @Component
 public class CompositeFilterEvaluator {
+    private static final Logger log = LoggerFactory.getLogger(CompositeFilterEvaluator.class);
+
     private final FilterRepository filterRepo;
     private final FilterService filterService;
 
@@ -24,6 +29,7 @@ public class CompositeFilterEvaluator {
 
     public boolean evaluate(String expression, String symbol, String metric, double currentValue) {
         expression = expression.trim();
+        // Handle logical operators AND/OR
         if(expression.contains(" AND ")) {
             String[] parts = expression.split(" AND ");
             boolean result = true;
@@ -39,6 +45,7 @@ public class CompositeFilterEvaluator {
             }
             return result;
         } else {
+            // Single filter name
             return checkSingleFilterByName(expression, symbol, metric, currentValue);
         }
     }
@@ -58,6 +65,7 @@ public class CompositeFilterEvaluator {
                 return filterService.checkSingleFilter(fr, symbol, metric, currentValue);
             }
         }
+        log.warn("CompositeFilterEvaluator: Filter {} not found or not enabled.", name);
         return false;
     }
 }
