@@ -11,11 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/*
-  CoinMarketCapService fetches real metrics and chart URLs.
-  Repository: https://github.com/Vladymirovich/RocketScreener
-*/
-
 @Service
 public class CoinMarketCapService implements DataSourceService {
     private final String apiKey;
@@ -28,9 +23,6 @@ public class CoinMarketCapService implements DataSourceService {
 
     @Override
     public Map<String, Double> fetchCurrentMetrics(String metric, List<String> symbols) {
-        // Example real request to CMC
-        // GET https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC,ETH
-        // Add headers: X-CMC_PRO_API_KEY: this.apiKey
         Map<String, Double> result = new HashMap<>();
         if(symbols.isEmpty()) return result;
 
@@ -48,9 +40,14 @@ public class CoinMarketCapService implements DataSourceService {
                 JSONObject json = new JSONObject(resp.body());
                 JSONObject data = json.getJSONObject("data");
                 for(String sym: symbols){
-                    JSONObject coin = data.getJSONObject(sym);
+                    JSONObject coin = data.getJSONObject(sym.toUpperCase());
                     JSONObject quote = coin.getJSONObject("quote").getJSONObject("USD");
-                    double val = quote.getDouble(metric.equals("volume")?"volume_24h":"price");
+                    double val;
+                    if(metric.equalsIgnoreCase("volume")){
+                        val = quote.getDouble("volume_24h");
+                    } else {
+                        val = quote.getDouble("price");
+                    }
                     result.put(sym, val);
                 }
             }
@@ -61,8 +58,7 @@ public class CoinMarketCapService implements DataSourceService {
     }
 
     public String fetchChartUrl(String symbol) {
-        // Assume we can get a chart URL or generate it.
-        // E.g. https://coinmarketcap.com/currencies/<symbol>/ - chart section
+        // Realistic approach: redirect user to coin page
         return "https://coinmarketcap.com/currencies/" + symbol.toLowerCase() + "/";
     }
 }
