@@ -73,13 +73,6 @@
             <version>${telegrambots.version}</version>
         </dependency>
         
-        <!-- Основная зависимость Telegram Bots для доступа к классам, таким как AnswerCallbackQuery -->
-        <dependency>
-            <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
-            <version>${telegrambots.version}</version>
-        </dependency>
-        
         <!-- Lombok for reducing boilerplate code -->
         <dependency>
             <groupId>org.projectlombok</groupId>
