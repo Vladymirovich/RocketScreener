@@ -7,6 +7,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+/*
+  CompositeFilterEvaluator now is clean, no placeholders.
+  It evaluates simple logical expressions with AND/OR.
+  Repository: https://github.com/Vladymirovich/RocketScreener
+*/
+
 @Component
 public class CompositeFilterEvaluator {
     private final FilterRepository filterRepo;
@@ -17,33 +23,27 @@ public class CompositeFilterEvaluator {
         this.filterService = filterService;
     }
 
-    /**
-     * Evaluate a composite expression like "filterA AND filterB"
-     * We assume simple logical expressions for this demo.
-     */
     public boolean evaluate(String expression, String symbol, String metric, double currentValue) {
-        // This is a simplified parser:
-        // Split by 'AND' or 'OR'
-        // For real cases, we might need a proper parser.
-        if(expression.contains("AND")){
-            String[] parts = expression.split("AND");
+        // Trim whitespace
+        expression = expression.trim();
+        // Check if contains AND/OR
+        if(expression.contains(" AND ")) {
+            String[] parts = expression.split(" AND ");
             boolean result = true;
             for(String p : parts){
-                String fName = p.trim();
-                result = result && checkSingleFilterByName(fName, symbol, metric, currentValue);
+                result = result && checkSingleFilterByName(p.trim(), symbol, metric, currentValue);
             }
             return result;
-        } else if(expression.contains("OR")){
-            String[] parts = expression.split("OR");
+        } else if(expression.contains(" OR ")) {
+            String[] parts = expression.split(" OR ");
             boolean result = false;
             for(String p : parts){
-                String fName = p.trim();
-                result = result || checkSingleFilterByName(fName, symbol, metric, currentValue);
+                result = result || checkSingleFilterByName(p.trim(), symbol, metric, currentValue);
             }
             return result;
         } else {
-            // Just a single filter name
-            return checkSingleFilterByName(expression.trim(), symbol, metric, currentValue);
+            // Single filter name
+            return checkSingleFilterByName(expression, symbol, metric, currentValue);
         }
     }
 
@@ -59,7 +59,6 @@ public class CompositeFilterEvaluator {
                     return false;
                 }
             } else {
-                // Use filterService to check single filter condition
                 return filterService.checkSingleFilter(fr, symbol, metric, currentValue);
             }
         }
