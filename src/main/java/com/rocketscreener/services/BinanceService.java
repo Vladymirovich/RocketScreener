@@ -11,11 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/*
-  BinanceService fetches real metrics and can provide a chart URL.
-  Repository: https://github.com/Vladymirovich/RocketScreener
-*/
-
 @Service
 public class BinanceService implements DataSourceService {
 
@@ -29,12 +24,9 @@ public class BinanceService implements DataSourceService {
 
     @Override
     public Map<String, Double> fetchCurrentMetrics(String metric, List<String> symbols) {
-        // Example: 
-        // GET https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT
-        // If multiple symbols, we do multiple requests or check if Binance supports multiple.
         Map<String, Double> result = new HashMap<>();
         for(String sym: symbols){
-            String pair = sym.toUpperCase()+"USDT"; // example conversion
+            String pair = sym.toUpperCase()+"USDT";
             String url = "https://api.binance.com/api/v3/ticker/24hr?symbol="+pair;
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -45,7 +37,7 @@ public class BinanceService implements DataSourceService {
                 if(resp.statusCode() == 200){
                     JSONObject json = new JSONObject(resp.body());
                     double val;
-                    if(metric.equals("volume")){
+                    if(metric.equalsIgnoreCase("volume")){
                         val = json.getDouble("volume");
                     } else {
                         val = json.getDouble("lastPrice");
@@ -60,8 +52,6 @@ public class BinanceService implements DataSourceService {
     }
 
     public String fetchChartUrl(String symbol) {
-        // Assume a generic chart URL from Binance or a third-party aggregator
-        // For example:
         return "https://www.binance.com/en/trade/" + symbol.toUpperCase() + "_USDT";
     }
 }
