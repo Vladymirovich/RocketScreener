@@ -2,6 +2,10 @@ package com.rocketscreener.storage;
 
 import java.math.BigDecimal;
 
+/**
+ * FilterRecord:
+ * Represents a filter with all necessary attributes, including support for composite filters.
+ */
 public record FilterRecord(
         int id,
         String name,
