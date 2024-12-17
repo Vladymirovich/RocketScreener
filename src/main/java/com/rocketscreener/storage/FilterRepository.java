@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 @Repository
 public class FilterRepository {
@@ -17,22 +18,23 @@ public class FilterRepository {
         this.jdbc = jdbc;
     }
 
-    public void addFilter(String name, String metric, double threshold, String thresholdType, int interval, boolean enabled, Object additionalData) throws DataAccessException {
-        String sql = "INSERT INTO filters (name, metric, threshold, threshold_type, interval, enabled, additional_data) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        jdbc.update(sql, name, metric, threshold, thresholdType, interval, enabled, additionalData);
+    public void addFilter(String name, String metric, BigDecimal thresholdValue, String thresholdType, int timeIntervalMinutes, boolean enabled, boolean isComposite, String compositeExpression) throws DataAccessException {
+        String sql = "INSERT INTO filters (name, metric, threshold, threshold_type, interval, enabled, is_composite, composite_expression) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        jdbc.update(sql, name, metric, thresholdValue, thresholdType, timeIntervalMinutes, enabled, isComposite, compositeExpression);
     }
 
     public List<FilterRecord> findAllEnabled() {
-        String sql = "SELECT id, name, metric, threshold, threshold_type, interval, enabled, additional_data FROM filters WHERE enabled = TRUE";
+        String sql = "SELECT id, name, metric, threshold, threshold_type, interval, enabled, is_composite, composite_expression FROM filters WHERE enabled = TRUE";
         return jdbc.query(sql, (rs, rowNum) -> new FilterRecord(
                 rs.getInt("id"),
                 rs.getString("name"),
                 rs.getString("metric"),
-                rs.getDouble("threshold"),
+                rs.getBigDecimal("threshold"),
                 rs.getString("threshold_type"),
                 rs.getInt("interval"),
                 rs.getBoolean("enabled"),
-                rs.getObject("additional_data")
+                rs.getBoolean("is_composite"),
+                rs.getString("composite_expression")
         ));
     }
 
