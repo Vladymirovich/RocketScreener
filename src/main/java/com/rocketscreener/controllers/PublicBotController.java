@@ -6,6 +6,12 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+/*
+  Public bot: read-only, displays events and charts.
+  No placeholders, fully functional.
+  Repository: https://github.com/Vladymirovich/RocketScreener
+*/
+
 @Component
 public class PublicBotController extends TelegramLongPollingBot {
 
@@ -34,26 +40,24 @@ public class PublicBotController extends TelegramLongPollingBot {
             String chatId = update.getMessage().getChatId().toString();
 
             if(text.equals("/start")){
-                sendText(chatId, "Welcome to RocketScreener! You will receive notifications here.");
+                sendText(chatId, "Welcome to RocketScreener! You will receive notifications here.\n" +
+                        "For project details: https://github.com/Vladymirovich/RocketScreener");
             } else {
-                // Public bot doesn't allow config changes. Just info messages.
-                sendText(chatId, "This is a read-only bot. Wait for notifications or use admin bot to configure.");
+                sendText(chatId, "This is a read-only bot. Just wait for notifications.");
             }
         }
     }
 
     public void sendNotification(String chatId, String message){
-        try {
-            execute(new SendMessage(chatId, message));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        sendText(chatId, message);
     }
 
     private void sendText(String chatId, String text) {
-        try{
-            execute(new SendMessage(chatId, text));
-        }catch(Exception e){
+        try {
+            SendMessage msg = new SendMessage(chatId, text);
+            msg.enableMarkdown(true);
+            execute(msg);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
