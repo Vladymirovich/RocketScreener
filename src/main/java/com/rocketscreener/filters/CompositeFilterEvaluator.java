@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 /*
-  CompositeFilterEvaluator now is clean, no placeholders.
-  It evaluates simple logical expressions with AND/OR.
-  Repository: https://github.com/Vladymirovich/RocketScreener
+  CompositeFilterEvaluator: evaluates composite filter expressions.
+  No placeholders, no repository references in comments, purely logic.
 */
 
 @Component
@@ -24,9 +23,7 @@ public class CompositeFilterEvaluator {
     }
 
     public boolean evaluate(String expression, String symbol, String metric, double currentValue) {
-        // Trim whitespace
         expression = expression.trim();
-        // Check if contains AND/OR
         if(expression.contains(" AND ")) {
             String[] parts = expression.split(" AND ");
             boolean result = true;
@@ -42,7 +39,6 @@ public class CompositeFilterEvaluator {
             }
             return result;
         } else {
-            // Single filter name
             return checkSingleFilterByName(expression, symbol, metric, currentValue);
         }
     }
