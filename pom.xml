@@ -14,7 +14,14 @@
     <description>RocketScreener project for screening rockets</description>
 
     <properties>
+        <!-- Project Encoding -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Java Version -->
         <java.version>17</java.version>
+
+        <!-- Dependency Versions -->
         <spring.boot.version>3.1.0</spring.boot.version>
         <telegrambots.version>6.5.0</telegrambots.version>
         <lombok.version>1.18.26</lombok.version>
@@ -112,7 +119,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <encoding>UTF-8</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -120,6 +127,16 @@
                             <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            
+            <!-- Maven Resources Plugin to Specify Encoding -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
         </plugins>
