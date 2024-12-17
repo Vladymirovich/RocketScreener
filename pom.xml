@@ -23,13 +23,13 @@
 
         <!-- Dependency Versions -->
         <spring.boot.version>3.1.0</spring.boot.version>
-        <telegrambots.version>6.3.0</telegrambots.version>
+        <telegrambots.version>6.5.0</telegrambots.version>
         <lombok.version>1.18.26</lombok.version>
         <hibernate.version>6.2.6.Final</hibernate.version>
-        <postgresql.version>42.5.4</postgresql.version>
+        <postgresql.version>42.5.5</postgresql.version> <!-- Обновлено до 42.5.5 -->
         <junit.jupiter.version>5.9.3</junit.jupiter.version>
         <dotenv.version>2.3.0</dotenv.version>
-        <json.version>20230618</json.version>
+        <json.version>20231013</json.version> <!-- Обновлено до 20231013 -->
     </properties>
 
     <dependencies>
@@ -150,7 +150,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.3.1</version> <!-- Обновлено до 3.3.1 -->
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
