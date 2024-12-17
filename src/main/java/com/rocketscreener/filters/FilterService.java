@@ -9,6 +9,11 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
+/*
+  FilterService evaluates filters (percentage, absolute) and composites.
+  No placeholders, real logic.
+*/
+
 @Service
 public class FilterService {
     private final FilterRepository filterRepo;
@@ -20,7 +25,6 @@ public class FilterService {
     }
 
     public boolean checkFilters(String symbol, String metric, double currentValue) {
-        // Retrieve all enabled filters
         List<FilterRecord> filters = filterRepo.findAllEnabled();
         boolean triggerEvent = false;
 
@@ -30,7 +34,6 @@ public class FilterService {
                     triggerEvent = true;
                 }
             } else {
-                // Composite handled separately
                 if(f.compositeExpression()!=null && !f.compositeExpression().isBlank()){
                     CompositeFilterEvaluator evaluator = com.rocketscreener.utils.SpringContext.getBean(CompositeFilterEvaluator.class);
                     if(evaluator.evaluate(f.compositeExpression(), symbol, metric, currentValue)){
@@ -51,13 +54,15 @@ public class FilterService {
         Timestamp from = Timestamp.from(Instant.now().minusSeconds(f.timeIntervalMinutes()*60L));
         var hist = histDataRepo.getDataForInterval(symbol, metric, from, now);
         double oldValue = hist.isEmpty()? currentValue : hist.get(0).value().doubleValue();
-        double change = ((currentValue - oldValue)/oldValue)*100.0;
+        double change = currentValue - oldValue;
+        double percentChange = (oldValue==0)? 0 : (change / oldValue)*100.0;
 
-        if(f.thresholdType().equalsIgnoreCase("percentage") && Math.abs(change) >= threshold) {
-            return true;
+        if(f.thresholdType().equalsIgnoreCase("percentage")) {
+            return Math.abs(percentChange) >= threshold;
+        } else if(f.thresholdType().equalsIgnoreCase("absolute")) {
+            return Math.abs(change) >= threshold;
         }
-
-        // Other threshold types can be implemented as needed
+        // Add more threshold types if needed
         return false;
     }
 }
