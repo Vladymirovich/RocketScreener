@@ -16,7 +16,7 @@
     <properties>
         <java.version>17</java.version>
         <spring.boot.version>3.1.0</spring.boot.version>
-        <telegrambots.version>6.3.0</telegrambots.version>
+        <telegrambots.version>6.5.0</telegrambots.version>
         <lombok.version>1.18.26</lombok.version>
         <hibernate.version>6.2.6.Final</hibernate.version>
         <postgresql.version>42.5.4</postgresql.version>
@@ -57,16 +57,10 @@
             <version>${hibernate.version}</version>
         </dependency>
         
-        <!-- Telegram Bots Library -->
+        <!-- Telegram Bots Spring Boot Starter -->
         <dependency>
             <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
-            <version>${telegrambots.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.telegram</groupId>
-            <artifactId>telegrambots-extensions</artifactId>
+            <artifactId>telegrambots-spring-boot-starter</artifactId>
             <version>${telegrambots.version}</version>
         </dependency>
         
