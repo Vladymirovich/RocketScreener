@@ -11,7 +11,8 @@ import java.nio.charset.StandardCharsets;
 import org.json.JSONObject;
 
 /*
-  OpenAiService: Analyze narrative of a coin using OpenAI API.
+  OpenAiService: Perform smart money analysis for a given coin and event.
+  The response must be 13-15 words.
   No placeholders. If no OPENAI_API_KEY, log error and return default.
 */
 
@@ -26,18 +27,23 @@ public class OpenAiService {
         this.httpClient = HttpClient.newHttpClient();
         this.openAiApiKey = dotenv.get("OPENAI_API_KEY");
         if(this.openAiApiKey == null){
-            log.warn("No OPENAI_API_KEY found. Cannot perform narrative analysis.");
+            log.warn("No OPENAI_API_KEY found. Cannot perform smart money analysis.");
         }
     }
 
-    public String analyzeNarrative(String symbol){
+    /**
+     * Analyze smart money activity related to a coin and a specific event.
+     * The prompt should request a 13-15 word summary of smart money behavior.
+     */
+    public String analyzeSmartMoney(String symbol, String eventType) {
         if(openAiApiKey == null || openAiApiKey.isEmpty()){
-            log.error("OpenAiService: No API key, returning default narrative.");
-            return "No narrative available.";
+            log.error("OpenAiService: No API key, returning default analysis.");
+            return "Unable to provide analysis due to missing API key.";
         }
 
-        // Example call to OpenAI API (ChatGPT model), pseudo code:
-        String prompt = "Provide a brief, current narrative for the cryptocurrency " + symbol + ".";
+        // Prompt focuses on smart money analysis, coin, and event:
+        String prompt = "In exactly 13 to 15 words, summarize smart money behavior for " + symbol + " during " + eventType + ".";
+
         String url = "https://api.openai.com/v1/completions";
         JSONObject requestBody = new JSONObject();
         requestBody.put("model", "text-davinci-003");
@@ -57,17 +63,23 @@ public class OpenAiService {
             if(resp.statusCode()==200){
                 JSONObject json = new JSONObject(resp.body());
                 if(json.has("choices") && json.getJSONArray("choices").length()>0){
-                    return json.getJSONArray("choices").getJSONObject(0).getString("text").trim();
+                    String text = json.getJSONArray("choices").getJSONObject(0).getString("text").trim();
+                    // We should verify the word count (13-15 words).
+                    int wordCount = text.split("\\s+").length;
+                    if(wordCount < 13 || wordCount > 15){
+                        log.warn("OpenAiService: Received text not within 13-15 words: {}", text);
+                    }
+                    return text;
                 } else {
                     log.warn("OpenAiService: Unexpected response format.");
                 }
             } else {
-                log.error("OpenAiService: Failed to get narrative. Status: {}", resp.statusCode());
+                log.error("OpenAiService: Failed to get analysis. Status: {}", resp.statusCode());
             }
         } catch(Exception e){
-            log.error("OpenAiService: Error analyzing narrative.", e);
+            log.error("OpenAiService: Error analyzing smart money.", e);
         }
 
-        return "No narrative available due to an error.";
+        return "No smart money analysis available due to an error.";
     }
 }
