@@ -3,11 +3,14 @@ package com.rocketscreener.controllers;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.*;
-import org.telegram.telegrambots.meta.api.objects.*;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.*;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.rocketscreener.storage.FilterRepository;
@@ -15,7 +18,6 @@ import com.rocketscreener.storage.FilterRecord;
 import com.rocketscreener.storage.SourceRepository;
 import com.rocketscreener.storage.SourceRecord;
 import com.rocketscreener.templates.TemplateService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -35,10 +37,17 @@ public class AdminBotController extends TelegramLongPollingBot {
     @Autowired
     private SourceRepository sourceRepo;
 
+    @Autowired
     public AdminBotController(Dotenv dotenv) {
         this.botToken = dotenv.get("ADMIN_BOT_TOKEN");
         this.botUsername = dotenv.get("ADMIN_BOT_USERNAME");
-        this.adminWhitelist = Arrays.asList(dotenv.get("ADMIN_WHITELIST").split(","));
+        String whitelist = dotenv.get("ADMIN_WHITELIST");
+        if (whitelist != null && !whitelist.isEmpty()) {
+            this.adminWhitelist = Arrays.asList(whitelist.split(","));
+        } else {
+            this.adminWhitelist = new ArrayList<>();
+            log.warn("ADMIN_WHITELIST is empty or not set in .env");
+        }
     }
 
     @Override
@@ -84,13 +93,21 @@ public class AdminBotController extends TelegramLongPollingBot {
             // Example: /add_filter VolumeChange volume 10 percentage 5
             String[] parts = text.split(" ");
             if(parts.length == 6){
-                String name = parts[1];
-                String metric = parts[2];
-                double threshold = Double.parseDouble(parts[3]);
-                String thresholdType = parts[4];
-                int interval = Integer.parseInt(parts[5]);
-                filterRepo.addFilter(name, metric, threshold, thresholdType, interval, false, null);
-                sendText(chatId, "Filter added successfully!");
+                try{
+                    String name = parts[1];
+                    String metric = parts[2];
+                    double threshold = Double.parseDouble(parts[3]);
+                    String thresholdType = parts[4];
+                    int interval = Integer.parseInt(parts[5]);
+                    filterRepo.addFilter(name, metric, threshold, thresholdType, interval, false, null);
+                    sendText(chatId, "Filter added successfully!");
+                } catch(NumberFormatException e){
+                    sendText(chatId, "Invalid number format. Please check your command.");
+                    log.error("Error parsing numbers in /add_filter command", e);
+                } catch(Exception e){
+                    sendText(chatId, "Failed to add filter. Please try again.");
+                    log.error("Error adding filter", e);
+                }
             } else {
                 sendText(chatId, "Usage: /add_filter name metric threshold threshold_type interval");
             }
@@ -99,13 +116,21 @@ public class AdminBotController extends TelegramLongPollingBot {
             // Example: /add_source CMC analytics https://pro-api.coinmarketcap.com YOUR_CMC_KEY 100
             String[] parts = text.split(" ");
             if(parts.length == 6){
-                String name = parts[1];
-                String type = parts[2];
-                String baseUrl = parts[3];
-                String apiKey = parts[4];
-                int priority = Integer.parseInt(parts[5]);
-                sourceRepo.addSource(name, type, baseUrl, apiKey, priority);
-                sendText(chatId, "Source added successfully!");
+                try{
+                    String name = parts[1];
+                    String type = parts[2];
+                    String baseUrl = parts[3];
+                    String apiKey = parts[4];
+                    int priority = Integer.parseInt(parts[5]);
+                    sourceRepo.addSource(name, type, baseUrl, apiKey, priority);
+                    sendText(chatId, "Source added successfully!");
+                } catch(NumberFormatException e){
+                    sendText(chatId, "Invalid number format. Please check your command.");
+                    log.error("Error parsing numbers in /add_source command", e);
+                } catch(Exception e){
+                    sendText(chatId, "Failed to add source. Please try again.");
+                    log.error("Error adding source", e);
+                }
             } else {
                 sendText(chatId, "Usage: /add_source name type base_url api_key priority");
             }
@@ -179,14 +204,22 @@ public class AdminBotController extends TelegramLongPollingBot {
     private void handleEditFilter(String chatId, String callbackId, String data){
         String[] parts = data.split(":");
         if(parts.length==2){
-            int filterId = Integer.parseInt(parts[1]);
-            FilterRecord f = filterRepo.findAllEnabled().stream().filter(x->x.id()==filterId).findFirst().orElse(null);
-            if(f!=null){
-                sendText(chatId, "Filter details:\nName: "+f.name()+"\nMetric: "+f.metric()+"\nThreshold: "+f.thresholdValue()+"\nInterval:"+f.timeIntervalMinutes()+"min");
-                answerCallbackQuery(callbackId,"Filter details shown");
-            } else {
-                answerCallbackQuery(callbackId,"Filter not found");
+            try{
+                int filterId = Integer.parseInt(parts[1]);
+                FilterRecord f = filterRepo.findAllEnabled().stream().filter(x->x.id()==filterId).findFirst().orElse(null);
+                if(f!=null){
+                    sendText(chatId, "Filter details:\nName: "+f.name()+"\nMetric: "+f.metric()+"\nThreshold: "+f.thresholdValue()+"\nInterval: "+f.timeIntervalMinutes()+" min");
+                    answerCallbackQuery(callbackId,"Filter details shown");
+                } else {
+                    answerCallbackQuery(callbackId,"Filter not found");
+                }
+            } catch(NumberFormatException e){
+                sendText(chatId, "Invalid filter ID format.");
+                log.error("Error parsing filter ID", e);
+                answerCallbackQuery(callbackId,"Invalid filter ID format");
             }
+        } else {
+            answerCallbackQuery(callbackId,"Invalid data format");
         }
     }
 
@@ -207,14 +240,22 @@ public class AdminBotController extends TelegramLongPollingBot {
     private void handleEditSource(String chatId, String callbackId, String data){
         String[] parts = data.split(":");
         if(parts.length==2){
-            int sourceId = Integer.parseInt(parts[1]);
-            SourceRecord s = sourceRepo.findAllEnabledSources().stream().filter(x->x.id()==sourceId).findFirst().orElse(null);
-            if(s!=null){
-                sendText(chatId, "Source details:\nName:"+s.name()+"\nType:"+s.type()+"\nBase URL:"+s.baseUrl()+"\nPriority:"+s.priority());
-                answerCallbackQuery(callbackId,"Source details shown");
-            } else {
-                answerCallbackQuery(callbackId,"Source not found");
+            try{
+                int sourceId = Integer.parseInt(parts[1]);
+                SourceRecord s = sourceRepo.findAllEnabledSources().stream().filter(x->x.id()==sourceId).findFirst().orElse(null);
+                if(s!=null){
+                    sendText(chatId, "Source details:\nName: "+s.name()+"\nType: "+s.type()+"\nBase URL: "+s.baseUrl()+"\nPriority: "+s.priority());
+                    answerCallbackQuery(callbackId,"Source details shown");
+                } else {
+                    answerCallbackQuery(callbackId,"Source not found");
+                }
+            } catch(NumberFormatException e){
+                sendText(chatId, "Invalid source ID format.");
+                log.error("Error parsing source ID", e);
+                answerCallbackQuery(callbackId,"Invalid source ID format");
             }
+        } else {
+            answerCallbackQuery(callbackId,"Invalid data format");
         }
     }
 
