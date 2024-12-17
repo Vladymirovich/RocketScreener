@@ -23,7 +23,7 @@ public class FilterRepository {
     }
 
     public List<FilterRecord> findAllEnabled() {
-        String sql = "SELECT * FROM filters WHERE enabled = TRUE";
+        String sql = "SELECT id, name, metric, threshold, threshold_type, interval, enabled, additional_data FROM filters WHERE enabled = TRUE";
         return jdbc.query(sql, (rs, rowNum) -> new FilterRecord(
                 rs.getInt("id"),
                 rs.getString("name"),
@@ -36,5 +36,10 @@ public class FilterRepository {
         ));
     }
 
-    // Другие методы репозитория
+    public void setFilterEnabled(int id, boolean enabled) {
+        String sql = "UPDATE filters SET enabled = ? WHERE id = ?";
+        jdbc.update(sql, enabled, id);
+    }
+
+    // Другие CRUD операции по необходимости
 }
