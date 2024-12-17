@@ -1,12 +1,15 @@
 package com.rocketscreener.storage;
 
+import java.math.BigDecimal;
+
 public record FilterRecord(
         int id,
         String name,
         String metric,
-        double thresholdValue,
+        BigDecimal thresholdValue,
         String thresholdType,
-        int interval,
+        int timeIntervalMinutes,
         boolean enabled,
-        Object additionalData
+        boolean isComposite,
+        String compositeExpression
 ) {}
