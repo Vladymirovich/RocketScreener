@@ -7,10 +7,19 @@ import com.rocketscreener.services.CoinMarketCapService;
 import com.rocketscreener.services.BinanceService;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+/*
+  EventService: records events and sends notifications.
+  No placeholders, real logic. If PUBLIC_CHAT_ID not found, log error and skip.
+*/
 
 @Service
 public class EventService {
+    private static final Logger log = LoggerFactory.getLogger(EventService.class);
+
     private final EventRepository eventRepo;
     private final TemplateService templateService;
     private final PublicBotController publicBot;
@@ -41,21 +50,23 @@ public class EventService {
         String lang = dotenv.get("DEFAULT_LANGUAGE","en");
         String templateName = eventType.toLowerCase() + "_notification";
 
-        // Determine which source service to use for chart
         String chartUrl;
         if(source.equalsIgnoreCase("coinmarketcap")){
             chartUrl = cmcService.fetchChartUrl(symbol);
         } else if(source.equalsIgnoreCase("binance")){
             chartUrl = binanceService.fetchChartUrl(symbol);
         } else {
-            // If other sources, fallback
             chartUrl = cmcService.fetchChartUrl(symbol);
         }
 
-        // Template placeholders: {0}=symbol, {1}=source, {2}=chartUrl
         String msg = templateService.render(templateName, lang, symbol, source, chartUrl);
 
-        String publicChatId = dotenv.get("PUBLIC_CHAT_ID","PUBLIC_CHAT_ID_PLACEHOLDER");
+        String publicChatId = dotenv.get("PUBLIC_CHAT_ID");
+        if(publicChatId == null || publicChatId.isEmpty()){
+            log.error("PUBLIC_CHAT_ID not found in .env, cannot send event notification.");
+            return;
+        }
+
         publicBot.sendNotification(publicChatId, msg);
     }
 }
