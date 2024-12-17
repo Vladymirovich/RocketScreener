@@ -12,11 +12,18 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import com.rocketscreener.storage.FilterRepository;
 import com.rocketscreener.storage.FilterRecord;
+import com.rocketscreener.storage.SourceRepository;
+import com.rocketscreener.storage.SourceRecord;
 import com.rocketscreener.templates.TemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
+/*
+  Admin bot allows full configuration.
+  Repository: https://github.com/Vladymirovich/RocketScreener
+  Use inline menus to manage filters, sources, templates.
+*/
 
 @Component
 public class AdminBotController extends TelegramLongPollingBot {
@@ -31,6 +38,8 @@ public class AdminBotController extends TelegramLongPollingBot {
     private TemplateService templateService;
     @Autowired
     private FilterRepository filterRepo;
+    @Autowired
+    private SourceRepository sourceRepo;
 
     public AdminBotController(Dotenv dotenv) {
         this.botToken = dotenv.get("ADMIN_BOT_TOKEN");
@@ -74,51 +83,11 @@ public class AdminBotController extends TelegramLongPollingBot {
         }
 
         if(text.equals("/start")){
-            sendText(chatId, "Welcome to the Admin Bot. Choose an option:");
+            sendText(chatId, "Welcome to Admin Bot menu. Use the inline menu.");
             showMainMenu(chatId);
-        } else if(text.startsWith("/add_filter")){
-            // Format: /add_filter name metric threshold threshold_type interval
-            // Example: /add_filter VolumeChange volume 10 percentage 5
-            String[] parts = text.split(" ");
-            if(parts.length == 6){
-                String name = parts[1];
-                String metric = parts[2];
-                double threshold = Double.parseDouble(parts[3]);
-                String thresholdType = parts[4];
-                int interval = Integer.parseInt(parts[5]);
-                filterRepo.addFilter(name, metric, threshold, thresholdType, interval, false, null);
-                sendText(chatId, "Filter added successfully!");
-            } else {
-                sendText(chatId, "Usage: /add_filter name metric threshold threshold_type interval");
-            }
-        } else if(text.startsWith("/add_source")){
-            // Format: /add_source name type base_url api_key priority
-            // Example: /add_source CMC analytics https://pro-api.coinmarketcap.com YOUR_CMC_KEY 100
-            String[] parts = text.split(" ");
-            if(parts.length == 6){
-                String name = parts[1];
-                String type = parts[2];
-                String baseUrl = parts[3];
-                String apiKey = parts[4];
-                int priority = Integer.parseInt(parts[5]);
-                // We'll need a repository method for this:
-                // In previous code, we have addSource(...) in SourceRepository.
-                // Let's assume it's implemented.
-                com.rocketscreener.storage.SourceRepository sr = getSourceRepo();
-                sr.addSource(name, type, baseUrl, apiKey, priority);
-                sendText(chatId, "Source added successfully!");
-            } else {
-                sendText(chatId, "Usage: /add_source name type base_url api_key priority");
-            }
         } else {
-            sendText(chatId, "Received admin command: " + text);
+            sendText(chatId, "Use the inline menus for configuration. Type /start to refresh.");
         }
-    }
-
-    private com.rocketscreener.storage.SourceRepository getSourceRepo(){
-        // In a proper Spring setup we'd @Autowired it or get from context
-        // For brevity, let's just assume we have a static context accessor
-        return com.rocketscreener.utils.SpringContext.getBean(com.rocketscreener.storage.SourceRepository.class);
     }
 
     private void handleCallbackQuery(CallbackQuery query) {
@@ -134,18 +103,42 @@ public class AdminBotController extends TelegramLongPollingBot {
         String data = query.getData();
         if(data.equals("manage_filters")){
             showFiltersMenu(chatId, query.getId());
-        } else if(data.equals("manage_templates")){
-            showTemplatesMenu(chatId, query.getId());
+        } else if(data.equals("manage_sources")){
+            showSourcesMenu(chatId, query.getId());
+        } else if(data.startsWith("edit_filter:")){
+            handleEditFilter(chatId, query.getId(), data);
+        } else if(data.startsWith("edit_source:")){
+            handleEditSource(chatId, query.getId(), data);
+        } else if(data.equals("add_filter")){
+            promptAddFilter(chatId);
+            answerCallbackQuery(query.getId(),"Enter filter details in chat.");
+        } else if(data.equals("add_source")){
+            promptAddSource(chatId);
+            answerCallbackQuery(query.getId(),"Enter source details in chat.");
         } else {
             answerCallbackQuery(query.getId(),"Unknown action");
         }
+    }
+
+    private void promptAddFilter(String chatId) {
+        sendText(chatId, "Please add filter using format:\n" +
+                "`/add_filter name metric threshold threshold_type interval`\n" +
+                "For example:\n" +
+                "`/add_filter VolumeChange volume 10 percentage 5`");
+    }
+
+    private void promptAddSource(String chatId){
+        sendText(chatId, "Please add source using format:\n" +
+                "`/add_source name type base_url api_key priority`\n" +
+                "For example:\n" +
+                "`/add_source CMC analytics https://pro-api.coinmarketcap.com YOUR_CMC_KEY 100`");
     }
 
     private void showMainMenu(String chatId) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         rows.add(Collections.singletonList(InlineKeyboardButton.builder().text("Manage Filters").callbackData("manage_filters").build()));
-        rows.add(Collections.singletonList(InlineKeyboardButton.builder().text("Manage Templates").callbackData("manage_templates").build()));
+        rows.add(Collections.singletonList(InlineKeyboardButton.builder().text("Manage Sources").callbackData("manage_sources").build()));
         markup.setKeyboard(rows);
 
         sendInlineKeyboard(chatId, "Admin Menu:", markup);
@@ -153,29 +146,64 @@ public class AdminBotController extends TelegramLongPollingBot {
 
     private void showFiltersMenu(String chatId, String callbackId) {
         List<FilterRecord> filters = filterRepo.findAllEnabled();
-        if(filters.isEmpty()){
-            answerCallbackQuery(callbackId,"No filters found");
-            return;
-        }
-
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         for(FilterRecord f : filters){
             rows.add(Collections.singletonList(InlineKeyboardButton.builder().text(f.name()).callbackData("edit_filter:"+f.id()).build()));
         }
+        rows.add(Collections.singletonList(InlineKeyboardButton.builder().text("Add Filter").callbackData("add_filter").build()));
         markup.setKeyboard(rows);
 
         sendInlineKeyboard(chatId, "Filters:", markup);
         answerCallbackQuery(callbackId,"Filters listed");
     }
 
-    private void showTemplatesMenu(String chatId, String callbackId) {
-        answerCallbackQuery(callbackId,"Templates management coming soon...");
-        // Similar approach as filters, we would list templates and provide edit options.
+    private void handleEditFilter(String chatId, String callbackId, String data){
+        String[] parts = data.split(":");
+        if(parts.length==2){
+            int filterId = Integer.parseInt(parts[1]);
+            FilterRecord f = filterRepo.findAllEnabled().stream().filter(x->x.id()==filterId).findFirst().orElse(null);
+            if(f!=null){
+                // Show details
+                sendText(chatId, "Filter details:\nName: "+f.name()+"\nMetric: "+f.metric()+"\nThreshold: "+f.thresholdValue()+"\nInterval:"+f.timeIntervalMinutes()+"min");
+                answerCallbackQuery(callbackId,"Filter details shown");
+            } else {
+                answerCallbackQuery(callbackId,"Filter not found");
+            }
+        }
+    }
+
+    private void showSourcesMenu(String chatId, String callbackId){
+        List<SourceRecord> sources = sourceRepo.findAllEnabledSources();
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        for(SourceRecord s : sources){
+            rows.add(Collections.singletonList(InlineKeyboardButton.builder().text(s.name()).callbackData("edit_source:"+s.id()).build()));
+        }
+        rows.add(Collections.singletonList(InlineKeyboardButton.builder().text("Add Source").callbackData("add_source").build()));
+        markup.setKeyboard(rows);
+
+        sendInlineKeyboard(chatId, "Sources:", markup);
+        answerCallbackQuery(callbackId,"Sources listed");
+    }
+
+    private void handleEditSource(String chatId, String callbackId, String data){
+        String[] parts = data.split(":");
+        if(parts.length==2){
+            int sourceId = Integer.parseInt(parts[1]);
+            SourceRecord s = sourceRepo.findAllEnabledSources().stream().filter(x->x.id()==sourceId).findFirst().orElse(null);
+            if(s!=null){
+                sendText(chatId, "Source details:\nName:"+s.name()+"\nType:"+s.type()+"\nBase URL:"+s.baseUrl()+"\nPriority:"+s.priority());
+                answerCallbackQuery(callbackId,"Source details shown");
+            } else {
+                answerCallbackQuery(callbackId,"Source not found");
+            }
+        }
     }
 
     private void sendText(String chatId, String text) {
         SendMessage msg = new SendMessage(chatId, text);
+        msg.enableMarkdown(true);
         try{
             execute(msg);
         }catch(Exception e){
