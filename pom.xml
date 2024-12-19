@@ -26,23 +26,9 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.14</version> <!-- Используем актуальную доступную версию -->
+        <version>3.1.12</version> <!-- Используем стабильную доступную версию -->
         <relativePath/> <!-- Поиск родительского POM в репозитории -->
     </parent>
-
-    <repositories>
-        <repository>
-            <id>central</id>
-            <name>Maven Central Repository</name>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <!-- Spring Boot Starter -->
@@ -148,7 +134,7 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>${json.path.version}</version>
+            <version>2.9.0</version>
         </dependency>
 
         <!-- YAML Parser -->
@@ -162,7 +148,7 @@
         <dependency>
             <groupId>org.xmlunit</groupId>
             <artifactId>xmlunit-core</artifactId>
-            <version>${xmlunit.core.version}</version>
+            <version>2.10.0</version>
         </dependency>
 
         <!-- Spring Boot Starter Test -->
@@ -184,7 +170,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.jupiter.version}</version>
+            <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
