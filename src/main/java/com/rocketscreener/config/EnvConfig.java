@@ -1,16 +1,18 @@
-package com.rocketscreener.config;
+package com.rocketscreener.service;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 
-@Configuration
-public class EnvConfig {
+@Service
+public class ExampleService {
 
-    @Bean
-    public Dotenv dotenv() {
-        return Dotenv.configure()
-                      .ignoreIfMissing()
-                      .load();
+    private final Dotenv dotenv;
+
+    public ExampleService(Dotenv dotenv) {
+        this.dotenv = dotenv;
+    }
+
+    public String getSecretKey() {
+        return dotenv.get("SECRET_KEY");
     }
 }
