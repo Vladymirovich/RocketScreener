@@ -2,7 +2,6 @@ package com.rocketscreener.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
@@ -18,13 +17,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // Disable CSRF for simplicity; adjust as needed
-            .csrf(csrf -> csrf.disable())
-            // Authorize all requests
+            // Включение защиты CSRF
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
+            )
+            // Авторизация всех запросов
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().permitAll()
             )
-            // Configure HTTP Firewall
+            // Настройка HTTP Firewall
             .httpFirewall(allowUrlEncodedSlashHttpFirewall());
 
         return http.build();
@@ -38,9 +39,9 @@ public class SecurityConfig {
     @Bean
     public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        // Allow URL encoded slash (%2F)
+        // Разрешение URL-кодированного слеша (%2F)
         firewall.setAllowUrlEncodedSlash(true);
-        // Add more configurations if necessary
+        // Дополнительные настройки при необходимости
         return firewall;
     }
 }
