@@ -14,9 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.rocketscreener.storage.FilterRepository;
-import com.rocketscreener.storage.FilterRecord;
 import com.rocketscreener.storage.SourceRepository;
-import com.rocketscreener.storage.SourceRecord;
 import com.rocketscreener.templates.TemplateService;
 
 import java.math.BigDecimal;
@@ -65,6 +63,28 @@ public class AdminBotController extends TelegramLongPollingBot {
         return this.botUsername;
     }
 
+    
+    /**
+     * Provides access to `templateService` for testing purposes.
+     */
+    public TemplateService getTemplateService() {
+        return this.templateService;
+    }
+
+    /**
+     * Provides access to `filterRepo` for testing purposes.
+     */
+    public FilterRepository getFilterRepo() {
+        return this.filterRepo;
+    }
+
+    /**
+     * Provides access to `sourceRepo` for testing purposes.
+     */
+    public SourceRepository getSourceRepo() {
+        return this.sourceRepo;
+    }
+    
     /**
      * Checks if the user is an admin based on the whitelist.
      *
@@ -75,7 +95,7 @@ public class AdminBotController extends TelegramLongPollingBot {
         return adminWhitelist.contains(userId);
     }
 
-    @Override
+  @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             handleTextMessage(update);
