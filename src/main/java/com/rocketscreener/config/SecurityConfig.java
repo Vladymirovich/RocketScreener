@@ -16,17 +16,16 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Создание экземпляра StrictHttpFirewall
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        firewall.setAllowUrlEncodedSemicolon(true); // Исправлено написание
-        firewall.setAllowUrlEncodedComma(true);     // Убедитесь, что метод существует
+        firewall.setAllowSemicolon(true); // Совместимо с актуальной версией Spring Security
+        firewall.setAllowUrlEncodedPercent(true);
 
-        // Настройка HttpSecurity
+        // Настройка HttpSecurity с включенной CSRF-защитой
         http
-            .csrf()
-            .and()
-            .authorizeHttpRequests()
-                .anyRequest().authenticated()
-                .and()
-            .httpFirewall(firewall); // Убедитесь, что метод httpFirewall доступен
+            .csrf(csrf -> csrf.enable()) // Включаем CSRF-защиту
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/public/**").permitAll() // Открытые эндпоинты
+                .anyRequest().authenticated() // Остальные эндпоинты требуют аутентификации
+            );
 
         return http.build();
     }
@@ -36,19 +35,14 @@ public class SecurityConfig {
      *
      * @return настроенный HttpFirewall.
      */
-    @Bean
+        @Bean
     public HttpFirewall strictHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        // Блокировка URL-кодированных слешей
+        firewall.setAllowSemicolon(false);
         firewall.setAllowUrlEncodedSlash(false);
-        // Блокировка обратных слешей
         firewall.setAllowBackSlash(false);
-        // Блокировка URL-кодированных процентов
         firewall.setAllowUrlEncodedPercent(false);
-        // Блокировка других потенциально опасных символов
         firewall.setAllowUrlEncodedPeriod(false);
-        firewall.setAllowUrlEncodedSemiColon(false);
-        firewall.setAllowUrlEncodedComma(false);
         return firewall;
     }
 }
