@@ -2,10 +2,11 @@ package com.rocketscreener.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 @Configuration
 public class SecurityConfig {
@@ -17,13 +18,15 @@ public class SecurityConfig {
             .csrf(csrf -> csrf
                 .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
             )
-            // Настройка авторизации
+            // Настройка правил авторизации
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/static/**").authenticated() // Пример: защита статических ресурсов
-                .anyRequest().permitAll()
+                .requestMatchers("/public/**").permitAll() // Разрешить доступ к публичным ресурсам
+                .anyRequest().authenticated() // Требовать аутентификацию для всех остальных запросов
             )
-            // Настройка HTTP Firewall
-            .httpFirewall(strictHttpFirewall());
+            // Настройка HTTP Firewall для предотвращения Path Traversal атак
+            .httpFirewall(strictHttpFirewall())
+            // Настройка формы логина (опционально)
+            .formLogin(Customizer.withDefaults());
 
         return http.build();
     }
@@ -38,9 +41,14 @@ public class SecurityConfig {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
         // Блокировка URL-кодированных слешей
         firewall.setAllowUrlEncodedSlash(false);
-        // Блокировка других потенциально опасных символов
+        // Блокировка обратных слешей
         firewall.setAllowBackSlash(false);
+        // Блокировка URL-кодированных процентов
         firewall.setAllowUrlEncodedPercent(false);
+        // Блокировка других потенциально опасных символов
+        firewall.setAllowUrlEncodedPeriod(false);
+        firewall.setAllowUrlEncodedSemiColon(false);
+        firewall.setAllowUrlEncodedComma(false);
         // Дополнительные настройки при необходимости
         return firewall;
     }
