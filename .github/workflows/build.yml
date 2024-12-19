@@ -1,4 +1,4 @@
-name: Build and Submit Maven Dependencies
+name: Build and Test
 
 on:
   push:
@@ -35,17 +35,6 @@ jobs:
     - name: Build with Maven
       run: mvn clean install -U
 
-    # Удалите или замените этот шаг, так как действие не существует
-    # - name: Submit Maven Dependencies
-    #   if: success()
-    #   uses: actions/maven-dependency-submission-action@v1
-    #   with:
-    #     groupId: com.rocketscreener
-    #     artifactId: RocketScreener
-    #     version: 0.0.1-SNAPSHOT
-    #     mavenJarPath: target/RocketScreener-0.0.1-SNAPSHOT.jar
-
-    # Если вы хотите загрузить артефакт, используйте actions/upload-artifact@v3
     - name: Upload JAR Artifact
       if: success()
       uses: actions/upload-artifact@v3
