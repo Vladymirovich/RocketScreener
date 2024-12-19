@@ -7,10 +7,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 
-/**
- * SecurityConfig:
- * Configures Spring Security to protect against path traversal attacks.
- */
 @Configuration
 public class SecurityConfig {
 
@@ -26,21 +22,21 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             // Настройка HTTP Firewall
-            .httpFirewall(allowUrlEncodedSlashHttpFirewall());
+            .httpFirewall(strictHttpFirewall());
 
         return http.build();
     }
 
     /**
-     * Configures a strict HTTP firewall to prevent path traversal attacks.
+     * Настройка строгого HTTP Firewall для предотвращения атак Path Traversal.
      *
-     * @return Configured HttpFirewall.
+     * @return настроенный HttpFirewall.
      */
     @Bean
-    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+    public HttpFirewall strictHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        // Разрешение URL-кодированного слеша (%2F)
-        firewall.setAllowUrlEncodedSlash(true);
+        // Разрешение URL-кодированного слеша (%2F) только при необходимости
+        firewall.setAllowUrlEncodedSlash(false);
         // Дополнительные настройки при необходимости
         return firewall;
     }
