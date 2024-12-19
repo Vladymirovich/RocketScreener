@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.14</version> <!-- Убедитесь, что эта версия доступна в Maven Central -->
+        <version>3.1.13</version> <!-- Обновлено до последней доступной версии -->
         <relativePath/> <!-- Поиск родительского POM в репозитории -->
     </parent>
 
@@ -55,11 +55,11 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Spring Security Web (Обновлено до 6.1.14) -->
+        <!-- Spring Security Web (Обновлено до 6.1.13) -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>6.1.14</version>
+            <version>6.1.13</version>
         </dependency>
 
         <!-- Telegram Bots -->
