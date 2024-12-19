@@ -35,7 +35,7 @@ public class SecurityConfig {
     @Bean
     public HttpFirewall strictHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        // Разрешение URL-кодированного слеша (%2F) только при необходимости
+        // Блокировка URL-кодированных слешей
         firewall.setAllowUrlEncodedSlash(false);
         // Дополнительные настройки при необходимости
         return firewall;
