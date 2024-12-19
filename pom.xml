@@ -50,7 +50,7 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
 
-        <!-- Spring Boot Starter Security (для использования Spring Security Firewall) -->
+        <!-- Spring Boot Starter Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -107,21 +107,21 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <!-- Версия удалена, управляется родительским POM -->
+            <!-- Версия управляется родительским POM -->
         </dependency>
 
         <!-- Spring Beans -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <!-- Версия удалена, управляется родительским POM -->
+            <!-- Версия управляется родительским POM -->
         </dependency>
 
         <!-- Spring Core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <!-- Версия удалена, управляется родительским POM -->
+            <!-- Версия управляется родительским POM -->
         </dependency>
 
         <!-- Logback Core -->
@@ -177,14 +177,14 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <!-- Версия удалена, управляется родительским POM -->
+            <!-- Версия управляется родительским POM -->
         </dependency>
 
         <!-- Spring Expression -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
-            <!-- Версия удалена, управляется родительским POM -->
+            <!-- Версия управляется родительским POM -->
         </dependency>
 
         <!-- Spring Boot Starter Test -->
