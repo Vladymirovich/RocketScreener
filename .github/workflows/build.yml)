@@ -1,0 +1,45 @@
+name: Build and Submit Maven Dependencies
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 17
+        server-id: github
+        server-username: ${{ github.actor }}
+        server-password: ${{ secrets.GITHUB_TOKEN }}
+        overwrite-settings: true
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: Linux-jdk17-temurin-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          Linux-jdk17-temurin-maven-
+
+    - name: Build with Maven
+      run: mvn clean install -U
+
+    - name: Submit Maven Dependencies
+      if: success()
+      uses: actions/maven-dependency-submission-action@v1
+      with:
+        groupId: com.rocketscreener
+        artifactId: RocketScreener
+        version: 0.0.1-SNAPSHOT
+        mavenJarPath: target/RocketScreener-0.0.1-SNAPSHOT.jar
