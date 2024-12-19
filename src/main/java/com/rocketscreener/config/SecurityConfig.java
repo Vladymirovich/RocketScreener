@@ -17,8 +17,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf
                 .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
             )
-            // Авторизация всех запросов
+            // Настройка авторизации
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/static/**").authenticated() // Пример: защита статических ресурсов
                 .anyRequest().permitAll()
             )
             // Настройка HTTP Firewall
@@ -37,6 +38,9 @@ public class SecurityConfig {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
         // Блокировка URL-кодированных слешей
         firewall.setAllowUrlEncodedSlash(false);
+        // Блокировка других потенциально опасных символов
+        firewall.setAllowBackSlash(false);
+        firewall.setAllowUrlEncodedPercent(false);
         // Дополнительные настройки при необходимости
         return firewall;
     }
