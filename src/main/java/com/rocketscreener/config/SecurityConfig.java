@@ -2,7 +2,6 @@ package com.rocketscreener.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.HttpFirewall;
@@ -25,8 +24,8 @@ public class SecurityConfig {
             )
             // Настройка HTTP Firewall для предотвращения Path Traversal атак
             .httpFirewall(strictHttpFirewall())
-            // Настройка формы логина (опционально)
-            .formLogin(Customizer.withDefaults());
+            // Настройка формы логина
+            .formLogin();
 
         return http.build();
     }
@@ -49,7 +48,6 @@ public class SecurityConfig {
         firewall.setAllowUrlEncodedPeriod(false);
         firewall.setAllowUrlEncodedSemiColon(false);
         firewall.setAllowUrlEncodedComma(false);
-        // Дополнительные настройки при необходимости
         return firewall;
     }
 }
