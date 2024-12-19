@@ -19,9 +19,10 @@ public class SecurityConfig {
         firewall.setAllowSemicolon(true); // Совместимо с актуальной версией Spring Security
         firewall.setAllowUrlEncodedPercent(true);
 
-        // Настройка HttpSecurity с включенной CSRF-защитой
+        // Настройка HttpSecurity
         http
-            .csrf(csrf -> csrf.enable()) // Включаем CSRF-защиту
+            .csrf() // CSRF защита включена по умолчанию
+            .and()
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/public/**").permitAll() // Открытые эндпоинты
                 .anyRequest().authenticated() // Остальные эндпоинты требуют аутентификации
@@ -31,11 +32,11 @@ public class SecurityConfig {
     }
 
     /**
-     * Настройка строгого HTTP Firewall для предотвращения атак Path Traversal.
+     * Настройка строгого HTTP Firewall.
      *
-     * @return настроенный HttpFirewall.
+     * @return экземпляр HttpFirewall
      */
-        @Bean
+    @Bean
     public HttpFirewall strictHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
         firewall.setAllowSemicolon(false);
