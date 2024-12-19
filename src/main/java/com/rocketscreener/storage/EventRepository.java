@@ -2,10 +2,17 @@ package com.rocketscreener.storage;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.json.JSONObject;
-import java.sql.Timestamp;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * EventRepository:
+ * Handles CRUD operations for events in the database.
+ */
 @Repository
 public class EventRepository {
     private final JdbcTemplate jdbc;
