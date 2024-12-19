@@ -9,24 +9,23 @@ import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // Создание экземпляра StrictHttpFirewall
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedSemicolon(true); // Исправлено написание
+        firewall.setAllowUrlEncodedComma(true);     // Убедитесь, что метод существует
+
+        // Настройка HttpSecurity
         http
-            // Включение защиты CSRF
-            .csrf(csrf -> csrf
-                .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
-            )
-            // Настройка правил авторизации
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/public/**").permitAll() // Разрешить доступ к публичным ресурсам
-                .anyRequest().authenticated() // Требовать аутентификацию для всех остальных запросов
-            )
-            // Настройка HTTP Firewall для предотвращения Path Traversal атак
-            .httpFirewall(strictHttpFirewall())
-            // Настройка формы логина
-            .formLogin();
+            .csrf().disable()
+            .authorizeHttpRequests()
+                .anyRequest().authenticated()
+                .and()
+            .httpFirewall(firewall); // Убедитесь, что метод httpFirewall доступен
 
         return http.build();
     }
