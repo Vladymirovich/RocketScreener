@@ -21,7 +21,8 @@ public class SecurityConfig {
 
         // Настройка HttpSecurity
         http
-            .csrf().disable()
+            .csrf()
+            .and()
             .authorizeHttpRequests()
                 .anyRequest().authenticated()
                 .and()
