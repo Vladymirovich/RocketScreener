@@ -76,6 +76,13 @@
             <version>6.2.7</version> <!-- Обновлено для устранения уязвимостей -->
         </dependency>
 
+        <!-- Spring Security Core (Обновлено до 6.2.3) -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>6.2.3</version> <!-- Обновлено для устранения уязвимостей -->
+        </dependency>
+
         <!-- Telegram Bots -->
         <dependency>
             <groupId>org.telegram</groupId>
