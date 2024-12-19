@@ -37,7 +37,7 @@ jobs:
 
     - name: Submit Maven Dependencies
       if: success()
-      uses: actions/maven-dependency-submission-action@v1
+      uses: advanced-security/maven-dependency-submission-action@v1
       with:
         groupId: com.rocketscreener
         artifactId: RocketScreener
