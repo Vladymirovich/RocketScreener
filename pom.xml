@@ -19,7 +19,7 @@
         <commons.io.version>2.14.0</commons.io.version>
         <tomcat.embed.core.version>10.1.25</tomcat.embed.core.version>
         <tomcat.embed.websocket.version>10.1.25</tomcat.embed.websocket.version>
-        <!-- Удалены версии Spring, чтобы избежать конфликтов с parent POM -->
+        <spring.web.version>6.0.25</spring.web.version>
         <logback.core.version>1.4.12</logback.core.version>
         <logback.classic.version>1.4.12</logback.classic.version>
         <snakeyaml.version>2.0</snakeyaml.version>
@@ -93,42 +93,42 @@
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
-            <version>${tomcat.embed.core.version}</version>
+            <version>[10.1.25,)</version>
         </dependency>
 
         <!-- Tomcat Embed WebSocket -->
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-websocket</artifactId>
-            <version>${tomcat.embed.websocket.version}</version>
+            <version>[10.1.25,)</version>
         </dependency>
 
         <!-- Spring Web -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>[6.0.23,)</version>
+            <version>${spring.web.version}</version>
         </dependency>
 
         <!-- Spring Context -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>6.1.14</version>
+            <!-- Версия удалена, управляется родительским POM -->
         </dependency>
 
         <!-- Spring Beans -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>6.1.14</version>
+            <!-- Версия удалена, управляется родительским POM -->
         </dependency>
 
         <!-- Spring Core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>6.1.14</version>
+            <!-- Версия удалена, управляется родительским POM -->
         </dependency>
 
         <!-- Logback Core -->
@@ -184,14 +184,14 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>6.1.14</version>
+            <!-- Версия удалена, управляется родительским POM -->
         </dependency>
 
         <!-- Spring Expression -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
-            <version>6.1.14</version>
+            <!-- Версия удалена, управляется родительским POM -->
         </dependency>
 
         <!-- Spring Boot Starter Test -->
