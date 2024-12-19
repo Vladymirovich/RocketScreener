@@ -103,5 +103,5 @@ public class FilterRepository {
         return filters.isEmpty() ? null : filters.get(0);
     }
 
-    // Другие CRUD операции по необходимости
+    // Other CRUD operations as needed
 }
