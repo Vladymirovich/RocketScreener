@@ -11,9 +11,8 @@ public class LocalizationConfig {
     @Bean
     public MessageSource messageSource(){
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:messages"); // Файл messages.properties должен быть в src/main/resources
+        messageSource.setBasename("classpath:messages"); // ensure messages.properties is in resources
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
-
 }
