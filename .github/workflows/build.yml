@@ -31,8 +31,6 @@ jobs:
     - name: Build with Maven
       run: mvn clean install -U
 
-    # Удалено несуществующее действие
-
     # Добавлено действие для загрузки артефактов
     - name: Upload JAR Artifact
       if: success()
