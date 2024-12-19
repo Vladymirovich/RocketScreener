@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TemplateService:
- * - Fetches template body from DB (via TemplateRepository)
- * - Replaces placeholders {0}, {1}, ... with provided arguments
- * - If template not found, logs error and returns a fallback string.
+ * - Fetches template body from DB (via TemplateRepository).
+ * - Replaces placeholders {0}, {1}, ... with provided arguments.
+ * - Provides the `generateResponse` method for quick string generation.
+ * - If template not found, logs an error and returns a fallback string.
  */
 @Service
 public class TemplateService {
+
     private static final Logger log = LoggerFactory.getLogger(TemplateService.class);
     private final TemplateRepository templateRepo;
 
@@ -21,12 +23,12 @@ public class TemplateService {
     }
 
     /**
-     * Fetches and renders a template by replacing placeholders {0}, {1}, etc., with arguments.
+     * Generates a message response using a template and arguments.
      *
      * @param templateName the name of the template.
      * @param language     the language of the template.
-     * @param args         the arguments to replace placeholders.
-     * @return the rendered template.
+     * @param args         the arguments to replace placeholders in the template.
+     * @return the rendered message.
      */
     public String render(String templateName, String language, Object... args) {
         String body = templateRepo.getTemplateBody(templateName, language);
@@ -34,7 +36,7 @@ public class TemplateService {
             log.error("TemplateService: No template found for {} in {}", templateName, language);
             return "No template available.";
         }
-
+        // Replace placeholders {0}, {1}, ...
         String msg = body;
         for (int i = 0; i < args.length; i++) {
             String placeholder = "{" + i + "}";
@@ -44,11 +46,11 @@ public class TemplateService {
     }
 
     /**
-     * Saves a template into the repository.
+     * Saves a template in the database.
      *
      * @param templateName the name of the template.
-     * @param body         the body of the template.
-     * @param eventType    the type of event for the template.
+     * @param body         the content of the template.
+     * @param eventType    the type of the event the template is for.
      * @param language     the language of the template.
      */
     public void saveTemplate(String templateName, String body, String eventType, String language) {
@@ -57,15 +59,14 @@ public class TemplateService {
     }
 
     /**
-     * Generates a response by rendering a template with arguments.
+     * A simplified version of `render` for use in bots and quick calls.
+     * Defaults to "en" if language is not provided.
      *
-     * @param templateName the name of the template to render.
+     * @param templateName the name of the template.
      * @param args         the arguments to replace placeholders in the template.
-     * @return the rendered response string.
+     * @return the rendered message.
      */
     public String generateResponse(String templateName, Object... args) {
-        // Default to "en" (English) as the language if none is specified
-        String language = "en";
-        return render(templateName, language, args);
+        return render(templateName, "en", args);
     }
 }
