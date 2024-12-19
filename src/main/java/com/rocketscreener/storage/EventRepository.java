@@ -9,6 +9,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;               // Добавлен импорт для List
+import java.sql.Timestamp;          // Добавлен импорт для Timestamp
+import org.json.JSONObject;        // Убедитесь, что этот импорт существует
+
 /**
  * EventRepository:
  * Handles CRUD operations for events in the database.
@@ -24,6 +28,12 @@ public class EventRepository {
     public void addEvent(String eventType, String symbol, String source, JSONObject details){
         jdbc.update("INSERT INTO events(event_type,symbol,source,details) VALUES (?,?,?,?::jsonb)",
                 eventType, symbol, source, details.toString());
+    }
+
+    public void someMethod() {
+        List<String> events = fetchEvents();
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        // Логика метода
     }
 
     public List<EventRecord> findRecentEvents(String eventType, Timestamp since) {
