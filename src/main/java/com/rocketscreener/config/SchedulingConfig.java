@@ -6,5 +6,5 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Configuration
 @EnableScheduling
 public class SchedulingConfig {
-    // Дополнительная конфигурация, если необходима
+    // Scheduling related beans if needed
 }
