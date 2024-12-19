@@ -19,10 +19,10 @@
         <commons.io.version>2.14.0</commons.io.version>
         <tomcat.embed.core.version>10.1.25</tomcat.embed.core.version>
         <tomcat.embed.websocket.version>10.1.25</tomcat.embed.websocket.version>
-        <spring.web.version>6.0.25</spring.web.version>
-        <logback.core.version>1.4.12</logback.core.version>
-        <logback.classic.version>1.4.12</logback.classic.version>
-        <snakeyaml.version>2.0</snakeyaml.version>
+        <spring.web.version>6.0.25</spring.web.version> <!-- Обновлено до 6.0.25 -->
+        <logback.core.version>1.4.12</logback.core.version> <!-- Обновлено до 1.4.12 -->
+        <logback.classic.version>1.4.12</logback.classic.version> <!-- Обновлено до 1.4.12 -->
+        <snakeyaml.version>2.0</snakeyaml.version> <!-- Обновлено до 2.0 -->
         <json.path.version>2.9.0</json.path.version>
         <xmlunit.core.version>2.10.0</xmlunit.core.version>
         <spring.jdbc.version>6.1.14</spring.jdbc.version>
@@ -93,14 +93,14 @@
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
-            <version>[10.1.25,)</version>
+            <version>${tomcat.embed.core.version}</version>
         </dependency>
 
         <!-- Tomcat Embed WebSocket -->
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-websocket</artifactId>
-            <version>[10.1.25,)</version>
+            <version>${tomcat.embed.websocket.version}</version>
         </dependency>
 
         <!-- Spring Web -->
@@ -135,14 +135,14 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>[1.4.12,)</version>
+            <version>${logback.core.version}</version>
         </dependency>
 
         <!-- Logback Classic -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>[1.4.12,)</version>
+            <version>${logback.classic.version}</version>
         </dependency>
 
         <!-- JSON -->
