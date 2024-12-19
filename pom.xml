@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.13</version> <!-- Используем стабильную доступную версию -->
+        <version>3.1.12</version> <!-- Используем стабильную доступную версию -->
         <relativePath/> <!-- Поиск родительского POM в репозитории -->
     </parent>
 
