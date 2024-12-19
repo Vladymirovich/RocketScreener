@@ -55,14 +55,14 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Spring Security Web (Обновлено до 6.2.7) -->
+        <!-- Spring Security Web -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
             <version>6.2.7</version> <!-- Обновлено для устранения уязвимостей -->
         </dependency>
 
-        <!-- Spring Security Core (Обновлено до 6.2.3) -->
+        <!-- Spring Security Core -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
@@ -95,7 +95,7 @@
             <version>${commons.io.version}</version>
         </dependency>
 
-        <!-- Guava (Обновлено до 32.0.1-android) -->
+        <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
