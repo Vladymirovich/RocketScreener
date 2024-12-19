@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.13</version> <!-- Обновлено до 3.1.13 -->
+        <version>3.1.14</version> <!-- Обновлено до доступной версии -->
         <relativePath/> <!-- Поиск родительского POM в репозитории -->
     </parent>
 
@@ -69,11 +69,11 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Spring Security Web (Обновлено до 6.2.3) -->
+        <!-- Spring Security Web (Обновлено до 6.2.7) -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>6.2.3</version>
+            <version>6.2.7</version> <!-- Обновлено до 6.2.7 для устранения уязвимостей -->
         </dependency>
 
         <!-- Telegram Bots -->
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>32.0.1-android</version>
+            <version>32.0.1-android</version> <!-- Обновлено до 32.0.1-android для устранения уязвимостей -->
         </dependency>
 
         <!-- Logback Core -->
