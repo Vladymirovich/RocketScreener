@@ -26,9 +26,23 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.13</version> <!-- Убедитесь, что эта версия доступна в Maven Central -->
+        <version>3.1.14</version> <!-- Используем последнюю доступную версию -->
         <relativePath/> <!-- Поиск родительского POM в репозитории -->
     </parent>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- Spring Boot Starter -->
@@ -53,6 +67,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Spring Security Web (Обновлено до 6.2.3) -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>6.2.3</version>
         </dependency>
 
         <!-- Telegram Bots -->
@@ -81,74 +102,11 @@
             <version>${commons.io.version}</version>
         </dependency>
 
-        <!-- Spring Security Web (Обновлено до 6.1.13) -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>6.1.13</version>
-        </dependency>
-
-        <!-- Spring Web -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>6.1.14</version> <!-- Обновлено до 6.1.14 -->
-        </dependency>
-
-        <!-- Spring Context -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>6.1.14</version> <!-- Обновлено до 6.1.14 -->
-        </dependency>
-
-        <!-- Spring Beans -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>6.1.14</version> <!-- Обновлено до 6.1.14 -->
-        </dependency>
-
-        <!-- Spring Core -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>6.1.14</version> <!-- Обновлено до 6.1.14 -->
-        </dependency>
-
-        <!-- Spring JDBC (Обновлено до 6.1.14) -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>6.1.14</version>
-        </dependency>
-
-        <!-- Spring Expression (Обновлено до 6.1.14) -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
-            <version>6.1.14</version>
-        </dependency>
-
         <!-- Guava (Обновлено до 32.0.1-android) -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>32.0.1-android</version>
-        </dependency>
-
-        <!-- Tomcat Embed Core -->
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-            <version>10.1.25</version> <!-- Обновлено до 10.1.25 -->
-        </dependency>
-
-        <!-- Tomcat Embed WebSocket -->
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-websocket</artifactId>
-            <version>10.1.25</version> <!-- Обновлено до 10.1.25 -->
         </dependency>
 
         <!-- Logback Core -->
