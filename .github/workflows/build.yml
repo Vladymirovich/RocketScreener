@@ -19,10 +19,6 @@ jobs:
       with:
         distribution: temurin
         java-version: 17
-        server-id: github
-        server-username: ${{ github.actor }}
-        server-password: ${{ secrets.GITHUB_TOKEN }}
-        overwrite-settings: true
 
     - name: Cache Maven packages
       uses: actions/cache@v3
@@ -35,15 +31,7 @@ jobs:
     - name: Build with Maven
       run: mvn clean install -U
 
-    # Удалено действие, которое вызывало ошибку
-    # - name: Submit Maven Dependencies
-    #   if: success()
-    #   uses: actions/maven-dependency-submission-action@v1
-    #   with:
-    #     groupId: com.rocketscreener
-    #     artifactId: RocketScreener
-    #     version: 0.0.1-SNAPSHOT
-    #     mavenJarPath: target/RocketScreener-0.0.1-SNAPSHOT.jar
+    # Удалено несуществующее действие
 
     # Добавлено действие для загрузки артефактов
     - name: Upload JAR Artifact
