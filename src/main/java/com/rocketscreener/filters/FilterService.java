@@ -19,72 +19,71 @@ public class FilterService {
     }
 
     /**
-     * Проверяет, соответствует ли текущий показатель фильтру.
+     * Checks if the current value satisfies the filter criteria.
      *
-     * @param filter        Фильтр для проверки.
-     * @param symbol        Символ (например, тикер криптовалюты).
-     * @param metric        Метрика, которую необходимо проверить.
-     * @param currentValue  Текущее значение метрики.
-     * @return true, если текущий показатель соответствует фильтру, иначе false.
+     * @param filter        The filter to check against.
+     * @param symbol        The symbol being evaluated.
+     * @param metric        The metric being evaluated.
+     * @param currentValue  The current value of the metric.
+     * @return true if the current value satisfies the filter, else false.
      */
     public boolean checkSingleFilter(FilterRecord filter, String symbol, String metric, double currentValue) {
         if (!filter.metric().equalsIgnoreCase(metric)) {
-            // Метрика не совпадает
+            // Metric does not match
             return false;
         }
 
         BigDecimal threshold = filter.thresholdValue();
         String thresholdType = filter.thresholdType().toLowerCase();
 
+        BigDecimal current = BigDecimal.valueOf(currentValue);
+
         switch (thresholdType) {
             case "greater_than":
-                return BigDecimal.valueOf(currentValue).compareTo(threshold) > 0;
+                return current.compareTo(threshold) > 0;
             case "greater_than_or_equal":
-                return BigDecimal.valueOf(currentValue).compareTo(threshold) >= 0;
+                return current.compareTo(threshold) >= 0;
             case "less_than":
-                return BigDecimal.valueOf(currentValue).compareTo(threshold) < 0;
+                return current.compareTo(threshold) < 0;
             case "less_than_or_equal":
-                return BigDecimal.valueOf(currentValue).compareTo(threshold) <= 0;
+                return current.compareTo(threshold) <= 0;
             case "equal":
-                return BigDecimal.valueOf(currentValue).compareTo(threshold) == 0;
+                return current.compareTo(threshold) == 0;
             case "not_equal":
-                return BigDecimal.valueOf(currentValue).compareTo(threshold) != 0;
+                return current.compareTo(threshold) != 0;
             default:
-                // Неизвестный тип порога
+                // Unknown threshold type
                 return false;
         }
     }
 
     /**
-     * Дополнительные методы сервиса по необходимости.
-     */
-
-    /**
-     * Метод для примера: получение всех фильтров.
+     * Retrieves all enabled filters.
      *
-     * @return Список всех включённых фильтров.
+     * @return List of enabled FilterRecord objects.
      */
     public List<FilterRecord> getAllEnabledFilters() {
         return filterRepository.findAllEnabled();
     }
 
     /**
-     * Метод для обновления фильтра.
+     * Updates the enabled status of a filter.
      *
-     * @param filterId Идентификатор фильтра.
-     * @param enabled  Статус включения фильтра.
+     * @param filterId ID of the filter.
+     * @param enabled  New enabled status.
      */
     public void updateFilterStatus(int filterId, boolean enabled) {
         filterRepository.setFilterEnabled(filterId, enabled);
     }
 
     /**
-     * Метод для удаления фильтра.
+     * Deletes a filter.
      *
-     * @param filterId Идентификатор фильтра.
+     * @param filterId ID of the filter to delete.
      */
     public void deleteFilter(int filterId) {
-        // Реализуйте логику удаления фильтра, если необходимо.
-        // Например, можно добавить метод в FilterRepository для удаления.
+        filterRepository.deleteFilter(filterId);
     }
+
+    // Additional service methods as needed
 }
