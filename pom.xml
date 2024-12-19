@@ -18,11 +18,8 @@
         <dotenv.version>5.3.0</dotenv.version>
         <commons.io.version>2.14.0</commons.io.version>
         <tomcat.embed.core.version>10.1.25</tomcat.embed.core.version>
-        <tomcat.embed.websocket.version>10.1.19</tomcat.embed.websocket.version>
-        <spring.web.version>6.0.23</spring.web.version>
-        <spring.context.version>6.1.14</spring.context.version>
-        <spring.beans.version>6.1.14</spring.beans.version>
-        <spring.core.version>6.1.14</spring.core.version>
+        <tomcat.embed.websocket.version>10.1.25</tomcat.embed.websocket.version>
+        <!-- Удалены версии Spring, чтобы избежать конфликтов с parent POM -->
         <logback.core.version>1.4.12</logback.core.version>
         <logback.classic.version>1.4.12</logback.classic.version>
         <snakeyaml.version>2.0</snakeyaml.version>
@@ -110,42 +107,42 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>${spring.web.version}</version>
+            <version>[6.0.23,)</version>
         </dependency>
 
         <!-- Spring Context -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.context.version}</version>
+            <version>6.1.14</version>
         </dependency>
 
         <!-- Spring Beans -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>${spring.beans.version}</version>
+            <version>6.1.14</version>
         </dependency>
 
         <!-- Spring Core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${spring.core.version}</version>
+            <version>6.1.14</version>
         </dependency>
 
         <!-- Logback Core -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>${logback.core.version}</version>
+            <version>[1.4.12,)</version>
         </dependency>
 
         <!-- Logback Classic -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.classic.version}</version>
+            <version>[1.4.12,)</version>
         </dependency>
 
         <!-- JSON -->
@@ -187,14 +184,14 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>${spring.jdbc.version}</version>
+            <version>6.1.14</version>
         </dependency>
 
         <!-- Spring Expression -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
-            <version>${spring.expression.version}</version>
+            <version>6.1.14</version>
         </dependency>
 
         <!-- Spring Boot Starter Test -->
