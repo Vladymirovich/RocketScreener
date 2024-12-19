@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.12</version> <!-- Используется доступная версия -->
+        <version>3.2.0</version> <!-- Обновлено до доступной версии -->
         <relativePath/> <!-- Поиск родительского POM в репозитории -->
     </parent>
 
@@ -54,6 +54,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Spring Security Web (Обновлено до 6.1.14) -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>6.1.14</version>
         </dependency>
 
         <!-- Telegram Bots -->
@@ -100,28 +107,42 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>6.0.25</version> <!-- Обновлено до 6.0.25 -->
+            <version>6.1.14</version> <!-- Обновлено до 6.1.14 -->
         </dependency>
 
         <!-- Spring Context -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <!-- Версия управляется родительским POM -->
+            <version>6.1.14</version> <!-- Обновлено до 6.1.14 -->
         </dependency>
 
         <!-- Spring Beans -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <!-- Версия управляется родительским POM -->
+            <version>6.1.14</version> <!-- Обновлено до 6.1.14 -->
         </dependency>
 
         <!-- Spring Core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <!-- Версия управляется родительским POM -->
+            <version>6.1.14</version> <!-- Обновлено до 6.1.14 -->
+        </dependency>
+
+        <!-- Spring JDBC (Обновлено до 6.1.14) -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>6.1.14</version>
+        </dependency>
+
+        <!-- Spring Expression (Обновлено до 6.1.14) -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>6.1.14</version>
         </dependency>
 
         <!-- Logback Core -->
@@ -171,20 +192,6 @@
             <groupId>org.xmlunit</groupId>
             <artifactId>xmlunit-core</artifactId>
             <version>${xmlunit.core.version}</version>
-        </dependency>
-
-        <!-- Spring JDBC -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <!-- Версия управляется родительским POM -->
-        </dependency>
-
-        <!-- Spring Expression -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
-            <!-- Версия управляется родительским POM -->
         </dependency>
 
         <!-- Spring Boot Starter Test -->
