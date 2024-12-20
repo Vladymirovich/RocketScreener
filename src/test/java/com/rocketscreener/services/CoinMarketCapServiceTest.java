@@ -1,13 +1,13 @@
 package com.rocketscreener.services;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CoinMarketCapServiceTest {
 
     @Mock
-    private Dotenv dotenv;
+    private CoinMarketCapApi coinMarketCapApi;
 
     @InjectMocks
     private CoinMarketCapService coinMarketCapService;
@@ -23,17 +23,30 @@ class CoinMarketCapServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(dotenv.get("COINMARKETCAP_API_KEY")).thenReturn("FAKE_CMC_KEY");
     }
 
     @Test
     void testFetchCurrentMetrics() {
-        // Mock behavior of CoinMarketCapService methods here and write test cases
-        when(coinMarketCapService.fetchCurrentMetrics("price", Collections.singletonList("BTC"))).thenReturn(Collections.singletonMap("BTC", 50000.0));
-        
-        var metrics = coinMarketCapService.fetchCurrentMetrics("price", Collections.singletonList("BTC"));
-        assertNotNull(metrics);
-        assertEquals(50000.0, metrics.get("BTC"));
-        verify(coinMarketCapService, times(1)).fetchCurrentMetrics("price", Collections.singletonList("BTC"));
+        String metric = "price";
+        List<String> symbols = List.of("BTC", "ETH");
+
+        when(coinMarketCapApi.fetchMetrics(metric, symbols)).thenReturn(Map.of("BTC", 50000.0, "ETH", 4000.0));
+
+        Map<String, Double> result = coinMarketCapService.fetchCurrentMetrics(metric, symbols);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(50000.0, result.get("BTC"));
+        verify(coinMarketCapApi, times(1)).fetchMetrics(metric, symbols);
+    }
+
+    @Test
+    void testFetchChartUrl() {
+        String symbol = "BTC";
+        String expectedUrl = "https://coinmarketcap.com/currencies/btc/";
+
+        String result = coinMarketCapService.fetchChartUrl(symbol);
+
+        assertEquals(expectedUrl, result);
     }
 }
