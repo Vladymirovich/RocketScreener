@@ -1,33 +1,20 @@
 package com.rocketscreener.controllers;
 
-import com.rocketscreener.storage.FilterRepository;
-import com.rocketscreener.storage.SourceRepository;
-import com.rocketscreener.templates.TemplateService;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class AdminBotControllerTest {
 
     @Mock
-    private Dotenv dotenv;
-
-    @Mock
-    private TemplateService templateService;
-
-    @Mock
-    private FilterRepository filterRepository;
-
-    @Mock
-    private SourceRepository sourceRepository;
+    private AdminService adminService;
 
     @InjectMocks
     private AdminBotController adminBotController;
@@ -35,42 +22,28 @@ class AdminBotControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(dotenv.get("ADMIN_BOT_TOKEN")).thenReturn("admin-test-token");
-        when(dotenv.get("ADMIN_BOT_USERNAME")).thenReturn("admin-test-bot");
-        when(dotenv.get("ADMIN_WHITELIST")).thenReturn("123456");
     }
 
     @Test
     void testHandleAdminUpdate() {
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
+        String adminMessage = "Update settings";
+        String response = "Settings updated";
 
-        when(update.hasMessage()).thenReturn(true);
-        when(update.getMessage()).thenReturn(message);
-        when(message.hasText()).thenReturn(true);
-        when(message.getText()).thenReturn("/start");
-        when(message.getChatId()).thenReturn(123L);
-        when(message.getFrom().getId()).thenReturn(123456L);
+        when(adminService.handleAdminCommand(adminMessage)).thenReturn(response);
 
-        adminBotController.onUpdateReceived(update);
+        String result = adminBotController.handleAdminUpdate(adminMessage);
 
-        verify(templateService, never()).render(anyString(), anyString());
+        assertEquals(response, result);
+        verify(adminService, times(1)).handleAdminCommand(adminMessage);
     }
 
     @Test
     void testUnauthorizedUser() {
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
+        String unauthorizedMessage = "Unauthorized access";
 
-        when(update.hasMessage()).thenReturn(true);
-        when(update.getMessage()).thenReturn(message);
-        when(message.hasText()).thenReturn(true);
-        when(message.getText()).thenReturn("/start");
-        when(message.getChatId()).thenReturn(123L);
-        when(message.getFrom().getId()).thenReturn(999999L);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> adminBotController.handleAdminUpdate(unauthorizedMessage));
 
-        Exception exception = assertThrows(SecurityException.class, () -> adminBotController.onUpdateReceived(update));
-
-        assertEquals("User not authorized", exception.getMessage());
+        assertEquals("User is not authorized", exception.getMessage());
+        verifyNoInteractions(adminService);
     }
 }
