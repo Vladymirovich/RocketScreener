@@ -25,29 +25,44 @@ class CompositeFilterEvaluatorTest {
 
     @Test
     void testEvaluateSimpleOr() {
-        String filterExpression = "price > 100 OR volume > 1000";
+        String expression = "price > 100 OR volume > 1000";
         String asset = "BTC";
         String field = "price";
         double value = 150.0;
 
-        when(filterService.evaluate(filterExpression, asset, field, value)).thenReturn(true);
+        when(filterService.evaluate(expression, asset, field, value)).thenReturn(true);
 
-        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, field, value);
+        boolean result = compositeFilterEvaluator.evaluate(expression, asset, field, value);
 
-        assertTrue(result, "Evaluation failed for simple OR expression.");
+        assertTrue(result, "Evaluation failed for OR condition.");
+    }
+
+    @Test
+    void testEvaluateSimpleAnd() {
+        String expression = "price > 100 AND volume > 2000";
+        String asset = "ETH";
+        String field = "volume";
+        double value = 2500.0;
+
+        when(filterService.evaluate(expression, asset, field, value)).thenReturn(true);
+
+        boolean result = compositeFilterEvaluator.evaluate(expression, asset, field, value);
+
+        assertTrue(result, "Evaluation failed for AND condition.");
     }
 
     @Test
     void testEvaluateInvalidExpression() {
-        String filterExpression = "INVALID_EXPRESSION";
+        String expression = "INVALID_EXPRESSION";
         String asset = "BTC";
         String field = "price";
         double value = 100.0;
 
-        when(filterService.evaluate(filterExpression, asset, field, value)).thenThrow(new IllegalArgumentException("Invalid filter expression"));
+        when(filterService.evaluate(expression, asset, field, value)).thenThrow(new IllegalArgumentException("Invalid expression"));
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> compositeFilterEvaluator.evaluate(filterExpression, asset, field, value));
+        Exception exception = assertThrows(IllegalArgumentException.class, 
+            () -> compositeFilterEvaluator.evaluate(expression, asset, field, value));
 
-        assertEquals("Invalid filter expression", exception.getMessage());
+        assertEquals("Invalid expression", exception.getMessage());
     }
 }
