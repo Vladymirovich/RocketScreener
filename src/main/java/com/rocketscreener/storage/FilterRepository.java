@@ -103,5 +103,18 @@ public class FilterRepository {
         return filters.isEmpty() ? null : filters.get(0);
     }
 
-    // Other CRUD operations as needed
-}
+    /**
+     * Validates a filter expression.
+     *
+     * @param expression The filter expression to validate.
+     * @return true if the expression is valid, else false.
+     */
+    public boolean validateExpression(String expression) {
+        // Example validation logic
+        return expression != null && !expression.isEmpty();
+    }
+
+    /**
+     * Saves a filter expression.
+     *
+     *
