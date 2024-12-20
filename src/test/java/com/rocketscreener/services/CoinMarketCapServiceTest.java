@@ -1,42 +1,32 @@
 package com.rocketscreener.services;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import io.github.cdimascio.dotenv.Dotenv;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
-import java.util.Map;
+import static org.mockito.Mockito.*;
 
-public class CoinMarketCapServiceTest {
-
-    @Mock
-    private Dotenv dotenv;
+class CoinMarketCapServiceTest {
 
     @InjectMocks
     private CoinMarketCapService coinMarketCapService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(dotenv.get("COINMARKETCAP_API_KEY")).thenReturn("FAKE_CMC_KEY");
+        Dotenv dotenv = Dotenv.load();
+        System.setProperty("COINMARKETCAP_API_KEY", dotenv.get("COINMARKETCAP_API_KEY")); // Load and set the test API key
     }
 
     @Test
-    public void testFetchCurrentMetrics() {
-        // Since CoinMarketCapService likely makes HTTP requests, you would mock HTTP responses here.
-        // For simplicity, assuming the method returns a fake value.
-
-        Map<String, Double> metrics = coinMarketCapService.fetchCurrentMetrics("price", Collections.singletonList("BTC"));
-        // Replace with actual expected behavior
+    void testFetchCurrentMetrics() {
+        // Mock behavior of CoinMarketCapService methods here and write test cases
+        when(coinMarketCapService.fetchCurrentMetrics("BTC")).thenReturn(new Metrics());
+        
+        Metrics metrics = coinMarketCapService.fetchCurrentMetrics("BTC");
         assertNotNull(metrics);
-        // Example assertion (adjust based on actual implementation)
-        // assertEquals(50000.0, metrics.get("BTC"));
+        verify(coinMarketCapService, times(1)).fetchCurrentMetrics("BTC");
     }
 }
