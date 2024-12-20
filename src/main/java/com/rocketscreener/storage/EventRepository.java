@@ -1,18 +1,15 @@
 package com.rocketscreener.storage;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;               
-import java.sql.Timestamp;          
-import java.time.LocalDateTime;     
-import org.json.JSONObject;        
+import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * EventRepository:
@@ -20,8 +17,9 @@ import org.json.JSONObject;
  */
 @Repository
 public class EventRepository {
-    private final JdbcTemplate jdbc;
+
     private static final Logger logger = LoggerFactory.getLogger(EventRepository.class);
+    private final JdbcTemplate jdbc;
 
     @Autowired
     public EventRepository(JdbcTemplate jdbc) {
@@ -29,32 +27,30 @@ public class EventRepository {
     }
 
     /**
-     * Добавляет новое событие в базу данных.
+     * Adds a new event to the database.
      *
-     * @param eventType тип события
-     * @param symbol    символ
-     * @param source    источник
-     * @param details   детали события в формате JSON
+     * @param eventType Type of the event.
+     * @param symbol    Symbol associated with the event.
+     * @param source    Source of the event.
+     * @param details   Details of the event in JSON format.
      */
-    public void addEvent(String eventType, String symbol, String source, JSONObject details){
+    public void addEvent(String eventType, String symbol, String source, JSONObject details) {
         try {
             jdbc.update("INSERT INTO events(event_type, symbol, source, details) VALUES (?, ?, ?, ?::jsonb)",
                     eventType, symbol, source, details.toString());
             logger.info("Event added successfully.");
         } catch (DataAccessException e) {
             logger.error("Error adding event: {}", e.getMessage());
-            // Обработка исключения
+            // Handle exception
         }
     }
 
     /**
-     * Пример метода, использующего List и Timestamp.
-     * Реализуйте логику получения событий из базы данных или другого источника.
+     * Fetches all events from the database.
      *
-     * @return список событий
+     * @return List of EventRecord objects.
      */
     public List<EventRecord> fetchEvents() {
-        // Пример реализации. Замените на реальную логику.
         String sql = "SELECT id, event_type, name, description, location, organizer, event_time, created_at, details FROM events";
         return jdbc.query(sql, (rs, rowNum) -> new EventRecord(
                 rs.getInt("id"),
@@ -70,21 +66,11 @@ public class EventRepository {
     }
 
     /**
-     * Пример использования метода fetchEvents.
-     */
-    public void someMethod() {
-        List<EventRecord> events = fetchEvents();
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-        // Логика метода
-        logger.info("Fetched {} events at {}", events.size(), currentTime);
-    }
-
-    /**
-     * Находит последние события по типу и времени.
+     * Finds recent events by type and time.
      *
-     * @param eventType тип события
-     * @param since     временная метка, с которой искать события
-     * @return список последних событий
+     * @param eventType Type of the event.
+     * @param since     Timestamp to filter events.
+     * @return List of recent EventRecord objects.
      */
     public List<EventRecord> findRecentEvents(String eventType, Timestamp since) {
         String sql = "SELECT id, event_type, name, description, location, organizer, event_time, created_at, details " +
@@ -100,14 +86,5 @@ public class EventRepository {
                 rs.getTimestamp("created_at").toLocalDateTime(),
                 new JSONObject(rs.getString("details"))
         ), eventType, since);
-    }
-
-    /**
-     * Сохраняет событие. Реализуйте логику сохранения события.
-     *
-     * @param event событие для сохранения
-     */
-    public void saveEvent(EventRecord event) {
-        // Реализуйте логику сохранения события
     }
 }
