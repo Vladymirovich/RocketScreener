@@ -1,20 +1,25 @@
 package com.rocketscreener.controllers;
 
+import com.rocketscreener.templates.TemplateService;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 class PublicBotControllerTest {
 
     @Mock
-    private BotService botService;
+    private Dotenv dotenv;
+
+    @Mock
+    private TemplateService templateService;
 
     @InjectMocks
     private PublicBotController publicBotController;
@@ -22,29 +27,27 @@ class PublicBotControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(dotenv.get("PUBLIC_BOT_TOKEN")).thenReturn("test-token");
+        when(dotenv.get("PUBLIC_BOT_USERNAME")).thenReturn("test-bot");
     }
 
     @Test
-    void testHandleValidUpdate() {
-        String message = "Hello Bot";
-        String expectedResponse = "Hi, how can I assist you?";
+    void testSendNotification() {
+        String chatId = "123456";
+        String title = "Notification Title";
+        String message = "Notification Message";
 
-        when(botService.processMessage(message)).thenReturn(expectedResponse);
-
-        String result = publicBotController.handleUpdate(message);
-
-        assertEquals(expectedResponse, result);
-        verify(botService, times(1)).processMessage(message);
+        publicBotController.sendNotification(chatId, title, message, new Object[]{"arg1", "arg2"});
+        verify(templateService, never()).render(anyString(), anyString());
     }
 
     @Test
     void testHandleInvalidUpdate() {
-        String invalidMessage = "";
+        Update update = mock(Update.class);
+        when(update.hasMessage()).thenReturn(false);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-            () -> publicBotController.handleUpdate(invalidMessage));
+        Exception exception = assertThrows(RuntimeException.class, () -> publicBotController.onUpdateReceived(update));
 
-        assertEquals("Invalid update message", exception.getMessage());
-        verifyNoInteractions(botService);
+        assertEquals("Invalid update received", exception.getMessage());
     }
 }
