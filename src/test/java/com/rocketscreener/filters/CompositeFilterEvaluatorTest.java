@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CompositeFilterEvaluatorTest {
 
     @Mock
-    private FilterService filterService;
+    private FilterService filterService; // Мок для FilterService
 
     @InjectMocks
     private CompositeFilterEvaluator compositeFilterEvaluator;
