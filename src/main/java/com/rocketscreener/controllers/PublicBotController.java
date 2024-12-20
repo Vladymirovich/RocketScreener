@@ -3,16 +3,17 @@ package com.rocketscreener.controllers;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
 import com.rocketscreener.templates.TemplateService;
 
 /**
- * Public bot: read-only, displays events and notifications to all users.
- * All logic is real, no placeholders. If any required env variable
- * is missing, we log an error.
+ * PublicBotController:
+ * Handles public interactions and notifications for RocketScreener Telegram bot.
  */
 @Component
 public class PublicBotController extends TelegramLongPollingBot {
@@ -23,6 +24,7 @@ public class PublicBotController extends TelegramLongPollingBot {
     private final String botUsername;
     private final TemplateService templateService;
 
+    @Autowired
     public PublicBotController(Dotenv dotenv, TemplateService templateService) {
         this.botToken = dotenv.get("PUBLIC_BOT_TOKEN");
         this.botUsername = dotenv.get("PUBLIC_BOT_USERNAME");
@@ -50,34 +52,22 @@ public class PublicBotController extends TelegramLongPollingBot {
             String chatId = update.getMessage().getChatId().toString();
 
             if (text.equals("/start")) {
-                String welcomeMessage = templateService.generateResponse("public_bot_start", chatId);
-                sendText(chatId, welcomeMessage);
+                sendText(chatId, "Welcome to RocketScreener! You will receive notifications here.");
             } else {
                 sendText(chatId, "This is a read-only bot. Wait for notifications.");
             }
         }
     }
 
-    /**
-     * Sends a notification to a user or group chat.
-     *
-     * @param chatId  the chat ID where the message will be sent.
-     * @param message the message content to send.
-     */
-    public void sendNotification(String chatId, String message) {
+    public void sendNotification(String chatId, String templateName, String language, Object... args) {
         if (botToken == null || botUsername == null) {
             log.error("Cannot send notification: bot credentials missing.");
             return;
         }
+        String message = templateService.render(templateName, language, args);
         sendText(chatId, message);
     }
 
-    /**
-     * Sends a plain text message to a user or group chat.
-     *
-     * @param chatId the chat ID where the message will be sent.
-     * @param text   the message content to send.
-     */
     private void sendText(String chatId, String text) {
         if (chatId == null || chatId.isEmpty()) {
             log.error("sendText: Invalid chatId");
