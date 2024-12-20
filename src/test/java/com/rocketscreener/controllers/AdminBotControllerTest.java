@@ -26,24 +26,25 @@ class AdminBotControllerTest {
 
     @Test
     void testHandleAdminUpdate() {
-        String adminMessage = "Update settings";
+        String command = "update settings";
         String response = "Settings updated";
 
-        when(adminService.handleAdminCommand(adminMessage)).thenReturn(response);
+        when(adminService.handleCommand(command)).thenReturn(response);
 
-        String result = adminBotController.handleAdminUpdate(adminMessage);
+        String result = adminBotController.handleAdminUpdate(command);
 
         assertEquals(response, result);
-        verify(adminService, times(1)).handleAdminCommand(adminMessage);
+        verify(adminService, times(1)).handleCommand(command);
     }
 
     @Test
-    void testUnauthorizedUser() {
-        String unauthorizedMessage = "Unauthorized access";
+    void testUnauthorizedAccess() {
+        String command = "restricted action";
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> adminBotController.handleAdminUpdate(unauthorizedMessage));
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> adminBotController.handleAdminUpdate(command));
 
-        assertEquals("User is not authorized", exception.getMessage());
+        assertEquals("Unauthorized access", exception.getMessage());
         verifyNoInteractions(adminService);
     }
 }
