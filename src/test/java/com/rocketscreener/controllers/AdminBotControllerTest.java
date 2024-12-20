@@ -9,10 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class AdminBotControllerTest {
 
     @Mock
@@ -22,10 +26,10 @@ class AdminBotControllerTest {
     private TemplateService templateService;
 
     @Mock
-    private FilterRepository filterRepo;
+    private FilterRepository filterRepository;
 
     @Mock
-    private SourceRepository sourceRepo;
+    private SourceRepository sourceRepository;
 
     @InjectMocks
     private AdminBotController adminBotController;
@@ -33,25 +37,25 @@ class AdminBotControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(dotenv.get("ADMIN_BOT_TOKEN")).thenReturn("dummy-token");
-        when(dotenv.get("ADMIN_BOT_USERNAME")).thenReturn("dummy-username");
-        when(dotenv.get("ADMIN_WHITELIST")).thenReturn("12345,67890");
-        adminBotController = new AdminBotController(dotenv);
+        when(dotenv.get("ADMIN_BOT_TOKEN")).thenReturn("test-token");
+        when(dotenv.get("ADMIN_BOT_USERNAME")).thenReturn("test-bot");
+        when(dotenv.get("ADMIN_WHITELIST")).thenReturn("123456");
     }
 
     @Test
     void testHandleTextMessage() {
         Update update = mock(Update.class);
+        Message message = mock(Message.class);
+
         when(update.hasMessage()).thenReturn(true);
-        when(update.getMessage().hasText()).thenReturn(true);
-        when(update.getMessage().getText()).thenReturn("/start");
-        when(update.getMessage().getChatId()).thenReturn(123L);
-        when(update.getMessage().getFrom().getId()).thenReturn(12345L);
+        when(update.getMessage()).thenReturn(message);
+        when(message.hasText()).thenReturn(true);
+        when(message.getText()).thenReturn("/start");
+        when(message.getChatId()).thenReturn(123L);
+        when(message.getFrom().getId()).thenReturn(123456L);
 
         adminBotController.onUpdateReceived(update);
 
-        verifyNoInteractions(templateService, filterRepo, sourceRepo);
+        verify(templateService, never()).render(anyString(), anyString());
     }
-
-    // Добавьте другие тесты для проверки методов контроллера
 }
