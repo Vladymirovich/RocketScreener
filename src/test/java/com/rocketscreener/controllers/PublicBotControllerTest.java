@@ -27,23 +27,24 @@ class PublicBotControllerTest {
     @Test
     void testHandleValidUpdate() {
         String message = "Hello Bot";
-        String response = "Hi, how can I help you?";
+        String expectedResponse = "Hi, how can I assist you?";
 
-        when(botService.handleMessage(message)).thenReturn(response);
+        when(botService.processMessage(message)).thenReturn(expectedResponse);
 
         String result = publicBotController.handleUpdate(message);
 
-        assertEquals(response, result);
-        verify(botService, times(1)).handleMessage(message);
+        assertEquals(expectedResponse, result);
+        verify(botService, times(1)).processMessage(message);
     }
 
     @Test
     void testHandleInvalidUpdate() {
         String invalidMessage = "";
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> publicBotController.handleUpdate(invalidMessage));
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> publicBotController.handleUpdate(invalidMessage));
 
-        assertEquals("Invalid update", exception.getMessage());
+        assertEquals("Invalid update message", exception.getMessage());
         verifyNoInteractions(botService);
     }
 }
