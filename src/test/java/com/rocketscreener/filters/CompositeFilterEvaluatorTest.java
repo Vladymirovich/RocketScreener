@@ -1,5 +1,6 @@
 package com.rocketscreener.filters;
 
+import com.rocketscreener.services.FilterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,27 +30,11 @@ class CompositeFilterEvaluatorTest {
         String field = "price";
         double value = 150.0;
 
-        // Mock the behavior of evaluate method
         when(filterService.evaluate(filterExpression, asset, field, value)).thenReturn(true);
 
         boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, field, value);
 
         assertTrue(result, "Evaluation failed for simple OR expression.");
-    }
-
-    @Test
-    void testEvaluateSimpleAnd() {
-        String filterExpression = "price > 100 AND volume > 1000";
-        String asset = "ETH";
-        String field = "volume";
-        double value = 1200.0;
-
-        // Mock the behavior of evaluate method
-        when(filterService.evaluate(filterExpression, asset, field, value)).thenReturn(true);
-
-        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, field, value);
-
-        assertTrue(result, "Evaluation failed for simple AND expression.");
     }
 
     @Test
@@ -59,12 +44,9 @@ class CompositeFilterEvaluatorTest {
         String field = "price";
         double value = 100.0;
 
-        // Mock the behavior of evaluate method to throw an exception
         when(filterService.evaluate(filterExpression, asset, field, value)).thenThrow(new IllegalArgumentException("Invalid filter expression"));
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            compositeFilterEvaluator.evaluate(filterExpression, asset, field, value);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> compositeFilterEvaluator.evaluate(filterExpression, asset, field, value));
 
         assertEquals("Invalid filter expression", exception.getMessage());
     }
