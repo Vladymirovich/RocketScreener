@@ -12,6 +12,7 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+// Тесты для CoinMarketCapService
 class CoinMarketCapServiceTest {
 
     @Mock
@@ -30,14 +31,18 @@ class CoinMarketCapServiceTest {
         String metric = "price";
         List<String> symbols = List.of("BTC", "ETH");
 
+        // Мокируем возвращаемые данные от API
         when(coinMarketCapApi.fetchMetrics(metric, symbols)).thenReturn(Map.of("BTC", 50000.0, "ETH", 4000.0));
 
         Map<String, Double> result = coinMarketCapService.fetchCurrentMetrics(metric, symbols);
 
+        // Проверяем результат
         assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals(50000.0, result.get("BTC"));
         assertEquals(4000.0, result.get("ETH"));
+
+        // Убеждаемся, что метод был вызван один раз
         verify(coinMarketCapApi, times(1)).fetchMetrics(metric, symbols);
     }
 
@@ -48,6 +53,7 @@ class CoinMarketCapServiceTest {
 
         String result = coinMarketCapService.fetchChartUrl(symbol);
 
+        // Проверяем правильность возвращаемого URL
         assertEquals(expectedUrl, result);
     }
 }
