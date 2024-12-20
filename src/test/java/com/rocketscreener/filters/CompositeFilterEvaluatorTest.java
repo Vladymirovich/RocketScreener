@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CompositeFilterEvaluatorTest {
@@ -28,23 +29,25 @@ class CompositeFilterEvaluatorTest {
     void testEvaluateSimpleOr() {
         String filterExpression = "price > 100 OR volume > 1000";
         String asset = "BTC";
+        double price = 150.0;
 
-        when(filterService.evaluate(filterExpression, asset)).thenReturn(true);
+        when(filterService.evaluate(filterExpression, asset, "price", price)).thenReturn(true);
 
-        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset);
+        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, "price", price);
 
-        assertTrue(result, "The filter evaluation failed for OR condition.");
+        assertTrue(result, "Evaluation failed for simple OR expression.");
     }
 
     @Test
     void testEvaluateSimpleAnd() {
         String filterExpression = "price > 100 AND volume > 1000";
-        String asset = "BTC";
+        String asset = "ETH";
+        double volume = 1200.0;
 
-        when(filterService.evaluate(filterExpression, asset)).thenReturn(true);
+        when(filterService.evaluate(filterExpression, asset, "volume", volume)).thenReturn(true);
 
-        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset);
+        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, "volume", volume);
 
-        assertTrue(result, "The filter evaluation failed for AND condition.");
+        assertTrue(result, "Evaluation failed for simple AND expression.");
     }
 }
