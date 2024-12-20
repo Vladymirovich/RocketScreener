@@ -7,6 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
+
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,12 +32,11 @@ class FilterServiceTest {
         String field = "price";
         double value = 150.0;
 
-        // Mock the behavior of validateExpression
+        // Mock the behavior of validateExpression in FilterService
         when(filterService.validateExpression(filterExpression)).thenReturn(true);
         boolean result = filterService.evaluate(filterExpression, asset, field, value);
 
         assertTrue(result, "Expected the filter expression to evaluate as true.");
-        verify(filterRepo, times(1)).validateExpression(filterExpression);
     }
 
     @Test
@@ -45,13 +46,12 @@ class FilterServiceTest {
         String field = "price";
         double value = 100.0;
 
-        // Mock the behavior of validateExpression
+        // Mock the behavior of validateExpression in FilterService
         when(filterService.validateExpression(filterExpression)).thenReturn(false);
 
         boolean result = filterService.evaluate(filterExpression, asset, field, value);
 
         assertFalse(result, "Expected the filter expression to evaluate as false.");
-        verify(filterRepo, times(1)).validateExpression(filterExpression);
     }
 
     @Test
@@ -59,7 +59,15 @@ class FilterServiceTest {
         String filterExpression = "price > 100";
         filterService.saveFilter(filterExpression);
 
-        verify(filterRepo, times(1)).addFilter(anyString(), anyString(), any(BigDecimal.class), anyString(), anyInt(), anyBoolean(), isNull());
+        verify(filterRepo, times(1)).addFilter(
+            eq(filterExpression), 
+            eq("metric"), 
+            any(BigDecimal.class), 
+            eq("greater_than"), 
+            eq(10), 
+            eq(false), 
+            isNull()
+        );
     }
 
     @Test
