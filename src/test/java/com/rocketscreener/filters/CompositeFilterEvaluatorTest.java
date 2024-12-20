@@ -1,6 +1,5 @@
 package com.rocketscreener.filters;
 
-import com.rocketscreener.services.FilterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,6 +31,7 @@ class CompositeFilterEvaluatorTest {
         String field = "price";
         double value = 150.0;
 
+        // Mock the behavior of evaluate method
         when(filterService.evaluate(filterExpression, asset, field, value)).thenReturn(true);
 
         boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, field, value);
@@ -46,6 +46,7 @@ class CompositeFilterEvaluatorTest {
         String field = "volume";
         double value = 1200.0;
 
+        // Mock the behavior of evaluate method
         when(filterService.evaluate(filterExpression, asset, field, value)).thenReturn(true);
 
         boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, field, value);
@@ -60,6 +61,7 @@ class CompositeFilterEvaluatorTest {
         String field = "price";
         double value = 100.0;
 
+        // Mock the behavior of evaluate method to throw an exception
         when(filterService.evaluate(filterExpression, asset, field, value)).thenThrow(new IllegalArgumentException("Invalid filter expression"));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
