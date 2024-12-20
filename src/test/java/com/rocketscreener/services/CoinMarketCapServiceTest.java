@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -31,7 +32,7 @@ class CoinMarketCapServiceTest {
     }
 
     @Test
-    void testFetchCurrentMetrics() {
+    void testFetchCurrentMetrics() throws IOException, InterruptedException {
         // Mocking the HTTP client and request responses
         HttpClient mockHttpClient = mock(HttpClient.class);
         coinMarketCapService.setHttpClient(mockHttpClient);
@@ -65,12 +66,8 @@ class CoinMarketCapServiceTest {
         when(mockResponse.statusCode()).thenReturn(200);
         when(mockResponse.body()).thenReturn(responseBody);
 
-        try {
-            when(mockHttpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+        when(mockHttpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
                 .thenReturn(mockResponse);
-        } catch (Exception e) {
-            fail("Exception should not be thrown during mocking HTTP client send");
-        }
 
         Map<String, Double> result = coinMarketCapService.fetchCurrentMetrics(metric, symbols);
 
