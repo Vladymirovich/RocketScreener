@@ -5,6 +5,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -16,18 +17,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class PublicBotControllerTest {
 
-    @InjectMocks
-    private PublicBotController publicBotController;
+    @Mock
+    private Dotenv dotenv;
 
     @Mock
     private TemplateService templateService;
 
+    @InjectMocks
+    private PublicBotController publicBotController;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        Dotenv dotenv = Dotenv.load();
-        System.setProperty("PUBLIC_BOT_TOKEN", dotenv.get("PUBLIC_BOT_TOKEN")); // Load and set the test public bot token
-        System.setProperty("PUBLIC_BOT_USERNAME", dotenv.get("PUBLIC_BOT_USERNAME")); // Load and set the test public bot username
+        when(dotenv.get("PUBLIC_BOT_TOKEN")).thenReturn("test-token");
+        when(dotenv.get("PUBLIC_BOT_USERNAME")).thenReturn("test-bot");
     }
 
     @Test
