@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.1</version> <!-- Используем указанную версию -->
+        <version>3.4.1</version> <!-- Указанная версия -->
         <relativePath/> <!-- Поиск родительского POM в репозитории -->
     </parent>
 
@@ -57,12 +57,12 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>6.4.2</version> <!-- Указанная версия -->
+            <version>6.4.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>6.4.2</version> <!-- Указанная версия -->
+            <version>6.4.2</version>
         </dependency>
 
         <!-- Telegram Bots -->
@@ -81,43 +81,42 @@
         <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>dotenv-java</artifactId>
-            <version>${dotenv.version}</version> <!-- Используем указанную версию -->
+            <version>${dotenv.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons.io.version}</version> <!-- Используем указанную версию -->
+            <version>${commons.io.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>32.0.1-android</version> <!-- Указанная версия -->
+            <version>32.0.1-android</version>
         </dependency>
 
         <!-- Logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version> <!-- Используем указанную версию -->
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version> <!-- Используем указанную версию -->
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.16</version> <!-- Указанная версия -->
+            <version>2.0.16</version>
         </dependency>
 
         <!-- JSON Processing -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>${json.path.version}</version> <!-- Используем указанную версию -->
+            <version>${json.path.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -128,17 +127,17 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>2.3</version> <!-- Указанная версия -->
+            <version>2.3</version>
         </dependency>
 
         <!-- XML Testing -->
         <dependency>
             <groupId>org.xmlunit</groupId>
             <artifactId>xmlunit-core</artifactId>
-            <version>${xmlunit.core.version}</version> <!-- Используем указанную версию -->
+            <version>${xmlunit.core.version}</version>
         </dependency>
 
-        <!-- Тестовые Зависимости -->
+        <!-- Тестовые зависимости -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -147,13 +146,13 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.14.2</version> <!-- Указанная версия -->
+            <version>5.14.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.11.4</version> <!-- Указанная версия -->
+            <version>5.11.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -178,7 +177,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven Surefire Plugin для тестов -->
+            <!-- Maven Surefire Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
