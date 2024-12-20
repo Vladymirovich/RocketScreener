@@ -12,18 +12,17 @@ import java.util.Map;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-// Тесты для CoinMarketCapService
 class CoinMarketCapServiceTest {
 
     @Mock
-    private CoinMarketCapApi coinMarketCapApi; // Мок для CoinMarketCapApi
+    private CoinMarketCapApi coinMarketCapApi; // Мок для недостающего CoinMarketCapApi
 
     @InjectMocks
     private CoinMarketCapService coinMarketCapService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.openMocks(this); // Инициализация моков
     }
 
     @Test
@@ -31,18 +30,17 @@ class CoinMarketCapServiceTest {
         String metric = "price";
         List<String> symbols = List.of("BTC", "ETH");
 
-        // Мокируем возвращаемые данные от API
-        when(coinMarketCapApi.fetchMetrics(metric, symbols)).thenReturn(Map.of("BTC", 50000.0, "ETH", 4000.0));
+        // Мокируем API ответ
+        when(coinMarketCapApi.fetchMetrics(metric, symbols))
+                .thenReturn(Map.of("BTC", 30000.0, "ETH", 2000.0));
 
         Map<String, Double> result = coinMarketCapService.fetchCurrentMetrics(metric, symbols);
 
-        // Проверяем результат
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertEquals(50000.0, result.get("BTC"));
-        assertEquals(4000.0, result.get("ETH"));
+        assertEquals(30000.0, result.get("BTC"));
+        assertEquals(2000.0, result.get("ETH"));
 
-        // Убеждаемся, что метод был вызван один раз
         verify(coinMarketCapApi, times(1)).fetchMetrics(metric, symbols);
     }
 
@@ -51,9 +49,8 @@ class CoinMarketCapServiceTest {
         String symbol = "BTC";
         String expectedUrl = "https://coinmarketcap.com/currencies/btc/";
 
-        String result = coinMarketCapService.fetchChartUrl(symbol);
+        String actualUrl = coinMarketCapService.fetchChartUrl(symbol);
 
-        // Проверяем правильность возвращаемого URL
-        assertEquals(expectedUrl, result);
+        assertEquals(expectedUrl, actualUrl);
     }
 }
