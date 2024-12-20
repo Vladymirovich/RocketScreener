@@ -7,6 +7,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -18,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class AdminBotControllerTest {
 
-    @InjectMocks
-    private AdminBotController adminBotController;
+    @Mock
+    private Dotenv dotenv;
 
     @Mock
     private TemplateService templateService;
@@ -30,13 +31,15 @@ class AdminBotControllerTest {
     @Mock
     private SourceRepository sourceRepository;
 
+    @InjectMocks
+    private AdminBotController adminBotController;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        Dotenv dotenv = Dotenv.load();
-        System.setProperty("ADMIN_BOT_TOKEN", dotenv.get("ADMIN_BOT_TOKEN")); // Load and set the test admin bot token
-        System.setProperty("ADMIN_BOT_USERNAME", dotenv.get("ADMIN_BOT_USERNAME")); // Load and set the test admin bot username
-        System.setProperty("ADMIN_WHITELIST", dotenv.get("ADMIN_WHITELIST")); // Load and set the test admin whitelist
+        when(dotenv.get("ADMIN_BOT_TOKEN")).thenReturn("admin-test-token");
+        when(dotenv.get("ADMIN_BOT_USERNAME")).thenReturn("admin-test-bot");
+        when(dotenv.get("ADMIN_WHITELIST")).thenReturn("123456");
     }
 
     @Test
