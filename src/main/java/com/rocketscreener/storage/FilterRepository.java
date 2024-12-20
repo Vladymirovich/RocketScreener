@@ -1,9 +1,9 @@
 package com.rocketscreener.storage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.dao.DataAccessException;
 
 import java.math.BigDecimal;
 import java.util.List;
