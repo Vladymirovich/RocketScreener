@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AdminBotControllerTest {
@@ -36,13 +37,13 @@ class AdminBotControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(dotenv.get("ADMIN_BOT_TOKEN")).thenReturn("test-token");
-        when(dotenv.get("ADMIN_BOT_USERNAME")).thenReturn("test-bot");
+        when(dotenv.get("ADMIN_BOT_TOKEN")).thenReturn("admin-test-token");
+        when(dotenv.get("ADMIN_BOT_USERNAME")).thenReturn("admin-test-bot");
         when(dotenv.get("ADMIN_WHITELIST")).thenReturn("123456");
     }
 
     @Test
-    void testHandleUpdate() {
+    void testHandleAdminUpdate() {
         Update update = mock(Update.class);
         Message message = mock(Message.class);
 
@@ -56,5 +57,22 @@ class AdminBotControllerTest {
         adminBotController.onUpdateReceived(update);
 
         verify(templateService, never()).render(anyString(), anyString());
+    }
+
+    @Test
+    void testUnauthorizedUser() {
+        Update update = mock(Update.class);
+        Message message = mock(Message.class);
+
+        when(update.hasMessage()).thenReturn(true);
+        when(update.getMessage()).thenReturn(message);
+        when(message.hasText()).thenReturn(true);
+        when(message.getText()).thenReturn("/start");
+        when(message.getChatId()).thenReturn(123L);
+        when(message.getFrom().getId()).thenReturn(999999L);
+
+        Exception exception = assertThrows(SecurityException.class, () -> adminBotController.onUpdateReceived(update));
+
+        assertEquals("User not authorized", exception.getMessage());
     }
 }
