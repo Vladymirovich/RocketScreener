@@ -23,7 +23,7 @@ class TemplateServiceTest {
     }
 
     @Test
-    void testRender() {
+    void testRenderTemplate() {
         String template = "Hello, {name}!";
         String lang = "en";
         Map<String, Object> data = new HashMap<>();
