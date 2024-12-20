@@ -29,11 +29,12 @@ class CompositeFilterEvaluatorTest {
     void testEvaluateSimpleOr() {
         String filterExpression = "price > 100 OR volume > 1000";
         String asset = "BTC";
-        double price = 150.0;
+        String field = "price";
+        double value = 150.0;
 
-        when(filterService.evaluate(filterExpression, asset, "price", price)).thenReturn(true);
+        when(filterService.evaluate(filterExpression, asset, field, value)).thenReturn(true);
 
-        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, "price", price);
+        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, field, value);
 
         assertTrue(result, "Evaluation failed for simple OR expression.");
     }
@@ -42,12 +43,29 @@ class CompositeFilterEvaluatorTest {
     void testEvaluateSimpleAnd() {
         String filterExpression = "price > 100 AND volume > 1000";
         String asset = "ETH";
-        double volume = 1200.0;
+        String field = "volume";
+        double value = 1200.0;
 
-        when(filterService.evaluate(filterExpression, asset, "volume", volume)).thenReturn(true);
+        when(filterService.evaluate(filterExpression, asset, field, value)).thenReturn(true);
 
-        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, "volume", volume);
+        boolean result = compositeFilterEvaluator.evaluate(filterExpression, asset, field, value);
 
         assertTrue(result, "Evaluation failed for simple AND expression.");
+    }
+
+    @Test
+    void testEvaluateInvalidExpression() {
+        String filterExpression = "INVALID_EXPRESSION";
+        String asset = "BTC";
+        String field = "price";
+        double value = 100.0;
+
+        when(filterService.evaluate(filterExpression, asset, field, value)).thenThrow(new IllegalArgumentException("Invalid filter expression"));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            compositeFilterEvaluator.evaluate(filterExpression, asset, field, value);
+        });
+
+        assertEquals("Invalid filter expression", exception.getMessage());
     }
 }
