@@ -1,23 +1,35 @@
 package com.rocketscreener.templates;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class TemplateServiceTest {
+class TemplateServiceTest {
 
-    @Autowired
+    @InjectMocks
     private TemplateService templateService;
 
-    @Test
-    void testGenerateResponse() {
-        String input = "Hello";
-        String expected = "You said: Hello";
-        String actual = templateService.generateResponse(input);
-        assertThat(actual).isEqualTo(expected);
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
-    // Add additional tests as needed
+    @Test
+    void testRender() {
+        String template = "Hello, {name}!";
+        String lang = "en";
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", "John");
+
+        String result = templateService.render(template, lang, data);
+        assertEquals("Hello, John!", result);
+    }
 }
