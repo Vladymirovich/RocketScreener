@@ -62,10 +62,10 @@ class FilterServiceTest {
 
     @Test
     void testDeleteFilter() {
-        String filterId = "123";
+        int filterId = 123;
 
         filterService.deleteFilter(filterId);
 
-        verify(filterRepo, times(1)).delete(filterId);
+        verify(filterRepo, times(1)).deleteFilter(filterId);
     }
 }
