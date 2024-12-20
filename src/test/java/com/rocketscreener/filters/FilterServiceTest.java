@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FilterServiceTest {
 
@@ -23,8 +24,48 @@ class FilterServiceTest {
     }
 
     @Test
-    void testFilterLogic() {
-        // Добавьте реализацию теста с использованием mock filterRepo
-        verifyNoMoreInteractions(filterRepo);
+    void testEvaluateValidExpression() {
+        String filterExpression = "price > 100";
+        String asset = "BTC";
+        String field = "price";
+        double value = 150.0;
+
+        when(filterRepo.validateExpression(filterExpression)).thenReturn(true);
+        boolean result = filterService.evaluate(filterExpression, asset, field, value);
+
+        assertTrue(result, "Expected the filter expression to evaluate as true.");
+        verify(filterRepo, times(1)).validateExpression(filterExpression);
+    }
+
+    @Test
+    void testEvaluateInvalidExpression() {
+        String filterExpression = "INVALID_EXPRESSION";
+        String asset = "BTC";
+        String field = "price";
+        double value = 100.0;
+
+        when(filterRepo.validateExpression(filterExpression)).thenReturn(false);
+
+        boolean result = filterService.evaluate(filterExpression, asset, field, value);
+
+        assertFalse(result, "Expected the filter expression to evaluate as false.");
+        verify(filterRepo, times(1)).validateExpression(filterExpression);
+    }
+
+    @Test
+    void testSaveFilter() {
+        String filterExpression = "price > 100";
+        filterService.saveFilter(filterExpression);
+
+        verify(filterRepo, times(1)).save(filterExpression);
+    }
+
+    @Test
+    void testDeleteFilter() {
+        String filterId = "123";
+
+        filterService.deleteFilter(filterId);
+
+        verify(filterRepo, times(1)).delete(filterId);
     }
 }
