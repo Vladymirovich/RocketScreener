@@ -1,6 +1,6 @@
 package com.rocketscreener.filters;
 
-import com.rocketscreener.services.FilterService;
+import com.rocketscreener.filters.FilterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
