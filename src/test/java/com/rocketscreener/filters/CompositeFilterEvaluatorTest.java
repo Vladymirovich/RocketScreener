@@ -1,6 +1,6 @@
 package com.rocketscreener.filters;
 
-import com.rocketscreener.services.FilterService; // Убедился, что класс доступен
+import com.rocketscreener.services.FilterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class CompositeFilterEvaluatorTest {
 
     @Mock
-    private FilterService filterService; // Мок FilterService
+    private FilterService filterService;
 
     @InjectMocks
     private CompositeFilterEvaluator compositeFilterEvaluator;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this); // Инициализация моков
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -34,7 +34,7 @@ class CompositeFilterEvaluatorTest {
 
         boolean result = compositeFilterEvaluator.evaluate(expression, asset, field, value);
 
-        assertTrue(result, "Failed to evaluate simple OR condition.");
+        assertTrue(result, "Evaluation failed for OR condition.");
     }
 
     @Test
@@ -48,7 +48,7 @@ class CompositeFilterEvaluatorTest {
 
         boolean result = compositeFilterEvaluator.evaluate(expression, asset, field, value);
 
-        assertTrue(result, "Failed to evaluate simple AND condition.");
+        assertTrue(result, "Evaluation failed for AND condition.");
     }
 
     @Test
@@ -60,7 +60,7 @@ class CompositeFilterEvaluatorTest {
 
         when(filterService.evaluate(expression, asset, field, value)).thenThrow(new IllegalArgumentException("Invalid expression"));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, 
+        Exception exception = assertThrows(IllegalArgumentException.class, 
             () -> compositeFilterEvaluator.evaluate(expression, asset, field, value));
 
         assertEquals("Invalid expression", exception.getMessage());
