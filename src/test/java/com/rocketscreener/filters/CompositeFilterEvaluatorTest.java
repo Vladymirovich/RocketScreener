@@ -10,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+// Тесты для CompositeFilterEvaluator
 class CompositeFilterEvaluatorTest {
 
     @Mock
@@ -30,10 +31,12 @@ class CompositeFilterEvaluatorTest {
         String field = "price";
         double value = 150.0;
 
+        // Мокируем возвращаемое значение
         when(filterService.evaluate(expression, asset, field, value)).thenReturn(true);
 
         boolean result = compositeFilterEvaluator.evaluate(expression, asset, field, value);
 
+        // Проверяем результат
         assertTrue(result, "Evaluation failed for OR condition.");
     }
 
@@ -44,10 +47,12 @@ class CompositeFilterEvaluatorTest {
         String field = "volume";
         double value = 2500.0;
 
+        // Мокируем возвращаемое значение
         when(filterService.evaluate(expression, asset, field, value)).thenReturn(true);
 
         boolean result = compositeFilterEvaluator.evaluate(expression, asset, field, value);
 
+        // Проверяем результат
         assertTrue(result, "Evaluation failed for AND condition.");
     }
 
@@ -58,11 +63,13 @@ class CompositeFilterEvaluatorTest {
         String field = "price";
         double value = 100.0;
 
+        // Мокируем выброс исключения
         when(filterService.evaluate(expression, asset, field, value)).thenThrow(new IllegalArgumentException("Invalid expression"));
 
         Exception exception = assertThrows(IllegalArgumentException.class, 
             () -> compositeFilterEvaluator.evaluate(expression, asset, field, value));
 
+        // Проверяем сообщение об ошибке
         assertEquals("Invalid expression", exception.getMessage());
     }
 }
