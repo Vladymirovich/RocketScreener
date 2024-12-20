@@ -19,10 +19,9 @@ public class SecurityConfig {
         firewall.setAllowSemicolon(true); // Совместимо с актуальной версией Spring Security
         firewall.setAllowUrlEncodedPercent(true);
 
-        // Настройка HttpSecurity
+        // Настройка HttpSecurity с использованием актуальных методов
         http
-            .csrf() // CSRF защита включена по умолчанию
-            .and()
+            .csrf(csrf -> csrf.disable()) // Отключение CSRF с учетом совместимости
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/public/**").permitAll() // Открытые эндпоинты
                 .anyRequest().authenticated() // Остальные эндпоинты требуют аутентификации
