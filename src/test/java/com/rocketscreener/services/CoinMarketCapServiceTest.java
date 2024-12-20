@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
@@ -13,14 +14,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CoinMarketCapServiceTest {
 
+    @Mock
+    private Dotenv dotenv;
+
     @InjectMocks
     private CoinMarketCapService coinMarketCapService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        Dotenv dotenv = Dotenv.load();
-        System.setProperty("COINMARKETCAP_API_KEY", dotenv.get("COINMARKETCAP_API_KEY")); // Load and set the test API key
+        when(dotenv.get("COINMARKETCAP_API_KEY")).thenReturn("FAKE_CMC_KEY");
     }
 
     @Test
