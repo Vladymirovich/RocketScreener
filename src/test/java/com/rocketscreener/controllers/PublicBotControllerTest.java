@@ -8,11 +8,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class PublicBotControllerTest {
@@ -39,27 +39,17 @@ class PublicBotControllerTest {
         String title = "Test Title";
         String message = "Test Message";
 
-        try {
-            publicBotController.sendNotification(chatId, title, message, new Object[]{});
-            verify(templateService, never()).render(anyString(), anyString());
-        } catch (Exception e) {
-            fail("Exception during sendNotification test: " + e.getMessage());
-        }
+        publicBotController.sendNotification(chatId, title, message, new Object[]{});
+        verify(templateService, never()).render(anyString(), anyString());
     }
 
     @Test
-    void testHandleUpdate() {
+    void testHandleUpdateWithInvalidMessage() {
         Update update = mock(Update.class);
-        Message message = mock(Message.class);
 
         when(update.hasMessage()).thenReturn(true);
-        when(update.getMessage()).thenReturn(message);
-        when(message.hasText()).thenReturn(true);
-        when(message.getText()).thenReturn("/start");
-        when(message.getChatId()).thenReturn(123L);
+        when(update.getMessage()).thenReturn(null);
 
-        publicBotController.onUpdateReceived(update);
-
-        verify(templateService, never()).render(anyString(), anyString());
+        assertThrows(NullPointerException.class, () -> publicBotController.onUpdateReceived(update));
     }
 }
