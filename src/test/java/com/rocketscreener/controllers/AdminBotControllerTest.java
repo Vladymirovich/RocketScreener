@@ -14,7 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AdminBotControllerTest {
@@ -43,7 +42,7 @@ class AdminBotControllerTest {
     }
 
     @Test
-    void testHandleTextMessage() {
+    void testHandleUpdate() {
         Update update = mock(Update.class);
         Message message = mock(Message.class);
 
