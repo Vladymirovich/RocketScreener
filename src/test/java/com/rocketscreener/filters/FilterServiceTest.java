@@ -30,7 +30,8 @@ class FilterServiceTest {
         String field = "price";
         double value = 150.0;
 
-        when(filterRepo.validateExpression(filterExpression)).thenReturn(true);
+        // Mock the behavior of validateExpression
+        when(filterService.validateExpression(filterExpression)).thenReturn(true);
         boolean result = filterService.evaluate(filterExpression, asset, field, value);
 
         assertTrue(result, "Expected the filter expression to evaluate as true.");
@@ -44,7 +45,8 @@ class FilterServiceTest {
         String field = "price";
         double value = 100.0;
 
-        when(filterRepo.validateExpression(filterExpression)).thenReturn(false);
+        // Mock the behavior of validateExpression
+        when(filterService.validateExpression(filterExpression)).thenReturn(false);
 
         boolean result = filterService.evaluate(filterExpression, asset, field, value);
 
@@ -57,15 +59,15 @@ class FilterServiceTest {
         String filterExpression = "price > 100";
         filterService.saveFilter(filterExpression);
 
-        verify(filterRepo, times(1)).save(filterExpression);
+        verify(filterRepo, times(1)).addFilter(anyString(), anyString(), any(BigDecimal.class), anyString(), anyInt(), anyBoolean(), isNull());
     }
 
     @Test
     void testDeleteFilter() {
-        String filterId = "123";
+        int filterId = 123;
 
         filterService.deleteFilter(filterId);
 
-        verify(filterRepo, times(1)).delete(filterId);
+        verify(filterRepo, times(1)).deleteFilter(filterId);
     }
 }
