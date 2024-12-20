@@ -14,14 +14,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Создание экземпляра StrictHttpFirewall
+        // Настройка HttpFirewall
         StrictHttpFirewall firewall = new StrictHttpFirewall();
         firewall.setAllowSemicolon(true); // Совместимо с актуальной версией Spring Security
         firewall.setAllowUrlEncodedPercent(true);
 
-        // Настройка HttpSecurity с использованием актуальных методов
+        // Настройка HttpSecurity с включенной CSRF защитой
         http
-            .csrf(csrf -> csrf.disable()) // Отключение CSRF с учетом совместимости
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/public/**") // Игнорирование CSRF для публичных эндпоинтов
+                .csrfTokenRepository(new CookieCsrfTokenRepository()) // Использование Cookie для хранения токенов
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/public/**").permitAll() // Открытые эндпоинты
                 .anyRequest().authenticated() // Остальные эндпоинты требуют аутентификации
