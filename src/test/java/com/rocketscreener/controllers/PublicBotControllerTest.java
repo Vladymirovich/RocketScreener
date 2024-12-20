@@ -13,7 +13,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PublicBotControllerTest {
@@ -37,14 +36,14 @@ class PublicBotControllerTest {
     @Test
     void testSendNotification() {
         String chatId = "123456";
-        String text = "Test Notification";
-        SendMessage sendMessage = new SendMessage(chatId, text);
+        String title = "Test Title";
+        String message = "Test Message";
 
         try {
-            publicBotController.sendNotification(chatId, text);
+            publicBotController.sendNotification(chatId, title, message, new Object[]{});
             verify(templateService, never()).render(anyString(), anyString());
         } catch (Exception e) {
-            fail("Exception thrown during sendNotification test: " + e.getMessage());
+            fail("Exception during sendNotification test: " + e.getMessage());
         }
     }
 
