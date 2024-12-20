@@ -8,11 +8,9 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
 import com.rocketscreener.templates.TemplateService;
 
 /**
- * PublicBotController:
  * Handles public interactions and notifications for RocketScreener Telegram bot.
  */
 @Component
