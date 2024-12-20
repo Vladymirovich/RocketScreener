@@ -15,14 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class CoinMarketCapServiceTest {
 
     @Mock
-    private CoinMarketCapApi coinMarketCapApi; // Мок для недостающего CoinMarketCapApi
+    private CoinMarketCapApi coinMarketCapApi;
 
     @InjectMocks
     private CoinMarketCapService coinMarketCapService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this); // Инициализация моков
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -30,17 +30,14 @@ class CoinMarketCapServiceTest {
         String metric = "price";
         List<String> symbols = List.of("BTC", "ETH");
 
-        // Мокируем API ответ
-        when(coinMarketCapApi.fetchMetrics(metric, symbols))
-                .thenReturn(Map.of("BTC", 30000.0, "ETH", 2000.0));
+        when(coinMarketCapApi.fetchMetrics(metric, symbols)).thenReturn(Map.of("BTC", 50000.0, "ETH", 4000.0));
 
         Map<String, Double> result = coinMarketCapService.fetchCurrentMetrics(metric, symbols);
 
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertEquals(30000.0, result.get("BTC"));
-        assertEquals(2000.0, result.get("ETH"));
-
+        assertEquals(50000.0, result.get("BTC"));
+        assertEquals(4000.0, result.get("ETH"));
         verify(coinMarketCapApi, times(1)).fetchMetrics(metric, symbols);
     }
 
@@ -49,8 +46,8 @@ class CoinMarketCapServiceTest {
         String symbol = "BTC";
         String expectedUrl = "https://coinmarketcap.com/currencies/btc/";
 
-        String actualUrl = coinMarketCapService.fetchChartUrl(symbol);
+        String result = coinMarketCapService.fetchChartUrl(symbol);
 
-        assertEquals(expectedUrl, actualUrl);
+        assertEquals(expectedUrl, result);
     }
 }
