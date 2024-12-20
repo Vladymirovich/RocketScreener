@@ -85,5 +85,41 @@ public class FilterService {
         filterRepository.deleteFilter(filterId);
     }
 
-    // Additional service methods as needed
+    /**
+     * Evaluates a filter expression.
+     *
+     * @param expression     The filter expression.
+     * @param symbol         The symbol being evaluated.
+     * @param metric         The metric being evaluated.
+     * @param currentValue   The current value of the metric.
+     * @return true if the expression evaluates to true, else false.
+     */
+    public boolean evaluate(String expression, String symbol, String metric, double currentValue) {
+        // Example implementation for evaluating filter expressions
+        // This is just a placeholder. Implement actual logic as needed.
+        return expression.contains(">");
+    }
+
+    /**
+     * Validates a filter expression.
+     *
+     * @param expression The filter expression.
+     * @return true if the expression is valid, else false.
+     */
+    public boolean validateExpression(String expression) {
+        // Example implementation for validating filter expressions
+        // This is just a placeholder. Implement actual logic as needed.
+        return expression != null && !expression.isEmpty();
+    }
+
+    /**
+     * Saves a filter expression.
+     *
+     * @param expression The filter expression.
+     */
+    public void saveFilter(String expression) {
+        // Example implementation for saving filter expressions
+        // This is just a placeholder. Implement actual logic as needed.
+        filterRepository.addFilter(expression, "metric", BigDecimal.valueOf(100), "greater_than", 10, false, null);
+    }
 }
