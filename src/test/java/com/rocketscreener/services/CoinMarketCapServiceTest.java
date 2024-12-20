@@ -6,7 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
+
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CoinMarketCapServiceTest {
 
@@ -23,10 +26,11 @@ class CoinMarketCapServiceTest {
     @Test
     void testFetchCurrentMetrics() {
         // Mock behavior of CoinMarketCapService methods here and write test cases
-        when(coinMarketCapService.fetchCurrentMetrics("BTC")).thenReturn(new Metrics());
+        when(coinMarketCapService.fetchCurrentMetrics("price", Collections.singletonList("BTC"))).thenReturn(Collections.singletonMap("BTC", 50000.0));
         
-        Metrics metrics = coinMarketCapService.fetchCurrentMetrics("BTC");
+        var metrics = coinMarketCapService.fetchCurrentMetrics("price", Collections.singletonList("BTC"));
         assertNotNull(metrics);
-        verify(coinMarketCapService, times(1)).fetchCurrentMetrics("BTC");
+        assertEquals(50000.0, metrics.get("BTC"));
+        verify(coinMarketCapService, times(1)).fetchCurrentMetrics("price", Collections.singletonList("BTC"));
     }
 }
