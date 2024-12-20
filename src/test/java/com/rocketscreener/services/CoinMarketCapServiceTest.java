@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CoinMarketCapServiceTest {
 
     @Mock
-    private CoinMarketCapApi coinMarketCapApi;
+    private CoinMarketCapApi coinMarketCapApi; // Мок для CoinMarketCapApi
 
     @InjectMocks
     private CoinMarketCapService coinMarketCapService;
