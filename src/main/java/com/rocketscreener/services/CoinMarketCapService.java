@@ -21,7 +21,7 @@ public class CoinMarketCapService implements DataSourceService {
     private static final Logger log = LoggerFactory.getLogger(CoinMarketCapService.class);
 
     private final String apiKey;
-    private final HttpClient httpClient;
+    private HttpClient httpClient;
 
     public CoinMarketCapService(Dotenv dotenv) {
         this.apiKey = dotenv.get("COINMARKETCAP_API_KEY");
@@ -86,5 +86,10 @@ public class CoinMarketCapService implements DataSourceService {
             return "";
         }
         return "https://coinmarketcap.com/currencies/" + symbol.toLowerCase() + "/";
+    }
+
+    // Setter for HttpClient to allow mocking in tests
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 }
