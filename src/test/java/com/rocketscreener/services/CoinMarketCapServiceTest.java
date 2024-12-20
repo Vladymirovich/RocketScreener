@@ -37,6 +37,7 @@ class CoinMarketCapServiceTest {
         assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals(50000.0, result.get("BTC"));
+        assertEquals(4000.0, result.get("ETH"));
         verify(coinMarketCapApi, times(1)).fetchMetrics(metric, symbols);
     }
 
