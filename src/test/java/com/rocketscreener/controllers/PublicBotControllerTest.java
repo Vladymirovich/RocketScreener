@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PublicBotControllerTest {
@@ -36,20 +36,20 @@ class PublicBotControllerTest {
     @Test
     void testSendNotification() {
         String chatId = "123456";
-        String title = "Test Title";
-        String message = "Test Message";
+        String title = "Notification Title";
+        String message = "Notification Message";
 
-        publicBotController.sendNotification(chatId, title, message, new Object[]{});
+        publicBotController.sendNotification(chatId, title, message, new Object[]{"arg1", "arg2"});
         verify(templateService, never()).render(anyString(), anyString());
     }
 
     @Test
-    void testHandleUpdateWithInvalidMessage() {
+    void testHandleInvalidUpdate() {
         Update update = mock(Update.class);
+        when(update.hasMessage()).thenReturn(false);
 
-        when(update.hasMessage()).thenReturn(true);
-        when(update.getMessage()).thenReturn(null);
+        Exception exception = assertThrows(RuntimeException.class, () -> publicBotController.onUpdateReceived(update));
 
-        assertThrows(NullPointerException.class, () -> publicBotController.onUpdateReceived(update));
+        assertEquals("Invalid update received", exception.getMessage());
     }
 }
